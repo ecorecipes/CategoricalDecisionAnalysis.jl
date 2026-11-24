@@ -27,8 +27,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: CategoricalDecisionAnalysis.jl
-      # The siblings that Project.toml finds through `[sources]` paths. The other
-      # ecosystem packages are found by URL.
+      # The siblings whose proofs the Lean project path-requires. Julia finds every
+      # ecosystem package by URL.
       - uses: actions/checkout@v4
         with:
           repository: ecorecipes/DecisionAnalysis.jl

@@ -2,7 +2,7 @@
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "0d59bbdc4942c7efd72ffaa4b59c2c208c6f3573"
+project_hash = "82ae2cf2f98df811a3a07901930ab9ba26f2d6f0"
 
 [[deps.ACSets]]
 deps = ["AlgebraicInterfaces", "Base64", "CompTime", "DataStructures", "JSON3", "MLStyle", "PEG", "Permutations", "Pkg", "PrettyTables", "Random", "Reexport", "SHA", "StaticArrays", "StructEquality", "StructTypes", "Tables"]
@@ -228,7 +228,7 @@ uuid = "83c8271f-e735-439d-be5f-7ff3e7e4c690"
 version = "0.1.0"
 
 [[deps.CategoricalDecisionAnalysis]]
-deps = ["ACSets", "BayesianNetworkFormats", "BayesianNetworkInference", "BayesianNetworks", "CategoricalBayesianNetworks", "CategoricalInfluenceDiagrams", "Catlab", "DecisionAnalysis", "FiniteKernels", "InfluenceDiagrams", "JuMP", "MarkovCategories", "ResilienceCore"]
+deps = ["ACSets", "BayesianNetworkFormats", "BayesianNetworkInference", "BayesianNetworks", "CategoricalBayesianNetworks", "CategoricalInfluenceDiagrams", "Catlab", "DecisionAnalysis", "FiniteKernels", "InfluenceDiagrams", "JuMP", "MarkovCategories", "ResilienceCore", "StructuredPopulationCore"]
 path = ".."
 uuid = "b9c7fdfb-c0ad-439e-95de-82bcdae34bd2"
 version = "0.1.0"
@@ -271,7 +271,9 @@ version = "1.0.1"
 
 [[deps.Chytridiomycosis]]
 deps = ["CommonSolve", "Dates", "Distributions", "DynamicalResilience", "LinearAlgebra", "LogDensityProblems", "OrdinaryDiffEqTsit5", "Random", "ResilienceCore", "SciMLBase", "StructuredPopulationCore", "TOML"]
-path = "../../Chytridiomycosis.jl"
+git-tree-sha1 = "08bebdc76726cd97670799bbde2469101afc3442"
+repo-rev = "main"
+repo-url = "https://github.com/ecorecipes/Chytridiomycosis.jl"
 uuid = "225de920-55da-40a7-8ddb-3f32ee84be8d"
 version = "0.2.0"
 
@@ -470,8 +472,10 @@ uuid = "ee1fde0b-3d02-5ea6-8484-8dfef6360eab"
 version = "1.16.2+0"
 
 [[deps.DecisionAnalysis]]
-deps = ["FiniteKernels", "JuMP", "LinearAlgebra", "Random", "Statistics", "Tables"]
-path = "../../DecisionAnalysis.jl"
+deps = ["FiniteKernels", "JuMP", "LinearAlgebra", "Random", "ResilienceCore", "Statistics", "StructuredPopulationCore", "Tables"]
+git-tree-sha1 = "a37b43f2b1e94a8bca3307c2cc62765e4f4d2049"
+repo-rev = "main"
+repo-url = "https://github.com/ecorecipes/DecisionAnalysis.jl"
 uuid = "6a9d793e-d09c-4461-8cb4-55c12d181024"
 version = "0.1.0"
 
@@ -633,7 +637,6 @@ version = "1.7.0"
 [[deps.DynamicalResilience]]
 deps = ["ForwardDiff", "LinearAlgebra", "Random", "ResilienceCore", "SciMLBase", "Statistics", "StructuredPopulationCore"]
 git-tree-sha1 = "bf87d9a5e3aa253da9b1b3d08dd655f783f9bddf"
-repo-rev = "main"
 repo-url = "https://github.com/ecorecipes/DynamicalResilience.jl"
 uuid = "54629d0c-0bd5-4489-a333-4d325b057304"
 version = "0.3.1"
@@ -769,7 +772,9 @@ version = "3.4.1"
 
 [[deps.FiniteKernels]]
 deps = ["LinearAlgebra", "Random", "ResilienceCore", "StructuredPopulationCore"]
-path = "../../FiniteKernels.jl"
+git-tree-sha1 = "84d801e5eaa3bed9510ef0777081570a5a56782a"
+repo-rev = "main"
+repo-url = "https://github.com/ecorecipes/FiniteKernels.jl"
 uuid = "2ee73795-50db-4096-9573-22982ed4949b"
 version = "0.1.0"
 
@@ -1990,7 +1995,6 @@ version = "1.11.1"
 [[deps.StructuredPopulationCore]]
 deps = ["LinearAlgebra", "Random", "Statistics"]
 git-tree-sha1 = "94d809243c5b09da67dd79110fbf2c5947b67a9e"
-repo-rev = "main"
 repo-url = "https://github.com/ecorecipes/ProjectionModels.jl"
 uuid = "33358fd2-7d60-4541-bded-caea801370e0"
 version = "0.1.4"

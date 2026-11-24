@@ -71,9 +71,16 @@ builds a decision analysis as a diagram of five kinds of box and reads the usual
 
 ## Installation
 
-The ecosystem packages are not registered. Clone this package beside `DecisionAnalysis.jl` and
-`FiniteKernels.jl`, which it finds through `[sources]` paths; the other ecosystem packages are fetched from
-GitHub.
+The ecosystem packages are not registered; they are found through `[sources]` URLs, so one command
+installs the package:
+
+```julia
+using Pkg
+Pkg.add(url="https://github.com/ecorecipes/CategoricalDecisionAnalysis.jl")
+```
+
+To work on the package, clone it and run the suite. Only the Lean project in `proofs/` needs
+`DecisionAnalysis.jl` and `FiniteKernels.jl` cloned beside it:
 
 ```sh
 git clone https://github.com/ecorecipes/FiniteKernels.jl

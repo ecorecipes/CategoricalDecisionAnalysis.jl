@@ -8,5 +8,6 @@ using Aqua: Aqua
                   stale_deps=(;
                               ignore=[:ACSets, :BayesianNetworkFormats,
                                       :BayesianNetworkInference, :BayesianNetworks,
-                                      :CategoricalBayesianNetworks]))
+                                      :CategoricalBayesianNetworks,
+                                      :StructuredPopulationCore]))
 end

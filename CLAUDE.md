@@ -12,11 +12,12 @@ package is where Catlab enters. It imports the Catlab generics `compose`, `otime
 `Catlab.Theories`) and `evaluate` (MarkovCategories', which is Catlab's), gives them methods, forwards to
 the core, and re-exports every name of the core (a loop over `names(DecisionAnalysis)` in the module).
 
-Dependencies: `DecisionAnalysis` and `FiniteKernels` by `[sources]` path to sibling directories
-(`../DecisionAnalysis.jl`, `../FiniteKernels.jl`); `MarkovCategories`, `CategoricalInfluenceDiagrams`,
+Dependencies: `DecisionAnalysis` and `FiniteKernels` by `[sources]` URL (the Lean project in `proofs/`
+still path-requires the sibling clones `../DecisionAnalysis.jl`, `../FiniteKernels.jl`); `MarkovCategories`, `CategoricalInfluenceDiagrams`,
 `InfluenceDiagrams`, `ResilienceCore` and the transitive siblings `CategoricalBayesianNetworks`,
-`BayesianNetworks`, `BayesianNetworkInference`, `BayesianNetworkFormats` by GitHub URL (none is
-registered, so every transitive sibling is listed in `[deps]` for its `[sources]` entry to apply; Aqua's
+`BayesianNetworks`, `BayesianNetworkInference`, `BayesianNetworkFormats`, `StructuredPopulationCore` by
+GitHub URL (none is registered, and Pkg does not follow the `[sources]` of a URL dependency, so every
+transitive sibling is listed in `[deps]` for its `[sources]` entry to apply; Aqua's
 stale-dependency check is told so in `test/test_aqua.jl`); `Catlab` 0.17.6 and `ACSets` 0.2.29 at the
 organisation's pins; `JuMP` to state programmes, never a solver (CDDLib and HiGHS are test extras and in
 the vignette environment). Nothing depends on this package. Do not edit the siblings from here, with one

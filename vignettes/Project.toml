@@ -2,6 +2,7 @@
 CDDLib = "3391f64e-dcde-5f30-b752-e11513730f60"
 CategoricalDecisionAnalysis = "b9c7fdfb-c0ad-439e-95de-82bcdae34bd2"
 Chytridiomycosis = "225de920-55da-40a7-8ddb-3f32ee84be8d"
+DynamicalResilience = "54629d0c-0bd5-4489-a333-4d325b057304"
 HiGHS = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
 Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -19,20 +20,23 @@ InfluenceDiagrams = "cd3dbe2d-275d-4a8e-841a-d44f7f7abf07"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 MarkovCategories = "89535b7d-47b5-4a7c-ab85-485cba9d75b9"
 ResilienceCore = "e31f93f6-99b1-4a70-b0c5-c402beffe4e1"
+StructuredPopulationCore = "33358fd2-7d60-4541-bded-caea801370e0"
 
 [sources]
 CategoricalDecisionAnalysis = {path = ".."}
-Chytridiomycosis = {path = "../../Chytridiomycosis.jl"}
+Chytridiomycosis = {url = "https://github.com/ecorecipes/Chytridiomycosis.jl"}
+DynamicalResilience = {url = "https://github.com/ecorecipes/DynamicalResilience.jl"}
 BayesianNetworkFormats = {url = "https://github.com/ecorecipes/BayesianNetworkFormats.jl"}
 BayesianNetworkInference = {url = "https://github.com/ecorecipes/BayesianNetworkInference.jl"}
 BayesianNetworks = {url = "https://github.com/ecorecipes/BayesianNetworks.jl"}
 CategoricalBayesianNetworks = {url = "https://github.com/ecorecipes/CategoricalBayesianNetworks.jl"}
 CategoricalInfluenceDiagrams = {url = "https://github.com/ecorecipes/CategoricalInfluenceDiagrams.jl"}
-DecisionAnalysis = {path = "../../DecisionAnalysis.jl"}
-FiniteKernels = {path = "../../FiniteKernels.jl"}
+DecisionAnalysis = {url = "https://github.com/ecorecipes/DecisionAnalysis.jl"}
+FiniteKernels = {url = "https://github.com/ecorecipes/FiniteKernels.jl"}
 InfluenceDiagrams = {url = "https://github.com/ecorecipes/InfluenceDiagrams.jl"}
 MarkovCategories = {url = "https://github.com/ecorecipes/MarkovCategories.jl"}
 ResilienceCore = {url = "https://github.com/ecorecipes/ResilienceCore.jl"}
+StructuredPopulationCore = {url = "https://github.com/ecorecipes/ProjectionModels.jl"}
 
 [compat]
 CDDLib = "0.10"

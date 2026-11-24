@@ -17,6 +17,7 @@ InfluenceDiagrams = "cd3dbe2d-275d-4a8e-841a-d44f7f7abf07"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 MarkovCategories = "89535b7d-47b5-4a7c-ab85-485cba9d75b9"
 ResilienceCore = "e31f93f6-99b1-4a70-b0c5-c402beffe4e1"
+StructuredPopulationCore = "33358fd2-7d60-4541-bded-caea801370e0"
 
 [sources]
 BayesianNetworkFormats = {url = "https://github.com/ecorecipes/BayesianNetworkFormats.jl"}
@@ -24,11 +25,12 @@ BayesianNetworkInference = {url = "https://github.com/ecorecipes/BayesianNetwork
 BayesianNetworks = {url = "https://github.com/ecorecipes/BayesianNetworks.jl"}
 CategoricalBayesianNetworks = {url = "https://github.com/ecorecipes/CategoricalBayesianNetworks.jl"}
 CategoricalInfluenceDiagrams = {url = "https://github.com/ecorecipes/CategoricalInfluenceDiagrams.jl"}
-DecisionAnalysis = {path = "../DecisionAnalysis.jl"}
-FiniteKernels = {path = "../FiniteKernels.jl"}
+DecisionAnalysis = {url = "https://github.com/ecorecipes/DecisionAnalysis.jl"}
+FiniteKernels = {url = "https://github.com/ecorecipes/FiniteKernels.jl"}
 InfluenceDiagrams = {url = "https://github.com/ecorecipes/InfluenceDiagrams.jl"}
 MarkovCategories = {url = "https://github.com/ecorecipes/MarkovCategories.jl"}
 ResilienceCore = {url = "https://github.com/ecorecipes/ResilienceCore.jl"}
+StructuredPopulationCore = {url = "https://github.com/ecorecipes/ProjectionModels.jl"}
 
 [compat]
 ACSets = "0.2.29"
@@ -49,6 +51,7 @@ JuMP = "1.32"
 MarkovCategories = "0.1"
 Random = "1"
 ResilienceCore = "0.1"
+StructuredPopulationCore = "0.1.4"
 Test = "1"
 julia = "1.12"
 

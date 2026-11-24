@@ -37,6 +37,6 @@ julia scripts/sync_vignettes.jl             # copy the Markdown into docs/src/tu
 The code runs once: Quarto executes it for GitHub-flavoured Markdown only, and pandoc (the one bundled
 with Quarto) makes the HTML and the PDF from that Markdown, so the three formats show the same numbers.
 Quarto and a TeX distribution with `lualatex` are needed (`quarto install tinytex`). The environment is
-`vignettes/Project.toml`; it finds this package, `DecisionAnalysis.jl`, `FiniteKernels.jl` and
-`Chytridiomycosis.jl` by path in sibling directories. Do not add `html` or `pdf` to `_quarto.yml` or to a
+`vignettes/Project.toml`; it finds this package by path and `DecisionAnalysis.jl`, `FiniteKernels.jl` and
+`Chytridiomycosis.jl` by URL. Do not add `html` or `pdf` to `_quarto.yml` or to a
 vignette's front matter: Quarto would run the code once per format.

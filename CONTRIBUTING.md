@@ -2,9 +2,9 @@
 
 ## Local setup
 
-The ecosystem packages are not registered. This package finds `DecisionAnalysis.jl` and
-`FiniteKernels.jl` through `[sources]` paths to sibling directories, and the other ecosystem packages
-(MarkovCategories, CategoricalInfluenceDiagrams and the packages under it, ResilienceCore) by GitHub URL:
+The ecosystem packages are not registered. This package finds every ecosystem package
+(DecisionAnalysis, FiniteKernels, MarkovCategories, CategoricalInfluenceDiagrams and the packages under
+it, ResilienceCore) through `[sources]` URLs. Only the Lean project in `proofs/` needs the sibling clones:
 
 ```sh
 git clone https://github.com/ecorecipes/FiniteKernels.jl
