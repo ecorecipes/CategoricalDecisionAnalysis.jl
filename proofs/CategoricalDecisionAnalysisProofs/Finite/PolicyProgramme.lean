@@ -10,7 +10,7 @@ in its linear case (a single decision with a fixed information structure), and t
 obligation for it: *the compiled programme's feasible set is in bijection with the diagram's
 strategies, and its objective equals expected utility*. It also backs the planned check "the
 compiled model's optimum equals the core's exact answer", and proves sound the certificate
-`"policy-certificate/1"` of `SCHEMAS-PROPOSED.md`.
+`"policy-certificate/1"` of `docs/src/certificates.md`.
 
 ## Conventions
 

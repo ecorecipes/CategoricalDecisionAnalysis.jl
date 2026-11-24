@@ -23,8 +23,7 @@ number that is not a rational, a ragged or wrongly sized matrix).
 
 The parse, the decoding into `Raw*` structures and the printing below are trusted, not proved.
 The verdict is the value of the proved checker; the other lines are `decide`s of its
-conjuncts. The schemas are proposals (`SCHEMAS-PROPOSED.md`): no Julia exporter writes them
-yet.
+conjuncts. The schemas are documented in `docs/src/certificates.md`; the package's exporters write them.
 -/
 import CategoricalDecisionAnalysisProofs.Certificate.Policy
 import CategoricalDecisionAnalysisProofs.Certificate.Fidelity
