@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Simon Frost" />
+  <title>Compiling a diagram to an optimisation programme</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+html { font-size: 17px; }
+body {
+font-family: "STIX Two Text", "Source Serif 4", Georgia, "Times New Roman", serif;
+line-height: 1.5; color: #1a1a1a; background: #fdfdfd;
+max-width: 50em; margin: 0 auto; padding: 2em 1.5em 4em;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+h1.title { margin-top: 0.5em; }
+p.author { color: #555; }
+a { color: #1f5fa8; }
+code, pre {
+font-family: "JuliaMono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+font-size: 0.86em;
+}
+pre { background: #f4f4f2; padding: 0.8em 1em; overflow-x: auto; border-radius: 4px; }
+code { background: #f4f4f2; padding: 0.05em 0.25em; border-radius: 3px; }
+pre code { background: none; padding: 0; font-size: 1em; }
+table { border-collapse: collapse; margin: 1em 0; font-size: 0.95em; display: block; overflow-x: auto; }
+th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; }
+thead th { border-bottom: 2px solid #888; }
+img { max-width: 100%; height: auto; }
+nav#TOC { background: #f4f4f2; padding: 0.6em 1em; border-radius: 4px; }
+nav#TOC ul { margin: 0.2em 0; padding-left: 1.2em; }
+@media (prefers-color-scheme: dark) {
+body { color: #e6e6e6; background: #1c1c1e; }
+a { color: #8ab4f8; }
+pre, code, nav#TOC { background: #2a2a2d; }
+th, td { border-bottom-color: #444; }
+img { background: #fff; }
+}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Compiling a diagram to an optimisation programme</h1>
+<p class="author">Simon Frost</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#motivation" id="toc-motivation">Motivation</a></li>
+<li><a href="#the-diagram" id="toc-the-diagram">The diagram</a></li>
+<li><a href="#one-decision-a-linear-programme" id="toc-one-decision-a-linear-programme">One decision: a linear
+programme</a></li>
+<li><a href="#a-budget" id="toc-a-budget">A budget</a></li>
+<li><a href="#a-cap-on-a-probability" id="toc-a-cap-on-a-probability">A
+cap on a probability</a></li>
+<li><a href="#several-decisions-a-mixed-integer-programme" id="toc-several-decisions-a-mixed-integer-programme">Several decisions:
+a mixed-integer programme</a>
+<ul>
+<li><a href="#programmes-compose-solutions-do-not" id="toc-programmes-compose-solutions-do-not">Programmes compose;
+solutions do not</a></li>
+</ul></li>
+<li><a href="#a-certificate" id="toc-a-certificate">A
+certificate</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</nav>
+<h1 id="motivation">Motivation</h1>
+<p>The diagrams of the earlier vignettes were solved by looking at every
+policy. That stops being possible quickly, and it cannot handle a side
+condition such as “the field team can treat at most so many ponds”. This
+vignette compiles a decision diagram to an optimisation programme,
+stated as a JuMP model: the decision box becomes the variables, the
+chance boxes the coefficients, the utility boxes the objective, and a
+side condition one more constraint. Any solver that JuMP knows can then
+be used; none is required, because the package carries an exact solver
+for small problems.</p>
+<p><strong>All numbers are illustrative.</strong> Counts are of frogs,
+and every result is compared with no intervention.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CategoricalDecisionAnalysis</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">JuMP</span>: JuMP</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">HiGHS</span>: HiGHS</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CDDLib</span>: CDDLib</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="fu">joinpath</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;_common.jl&quot;</span>))</span></code></pre></div>
+<pre><code>Main.Notebook.voi_table</code></pre>
+<h1 id="the-diagram">The diagram</h1>
+<p>A chytrid fungus may be present in a pond that holds a frog
+population. A swab survey gives a low or a high count of infected
+animals. The manager can do nothing or treat the frogs with an
+antifungal bath, which loses a few animals to handling.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pond <span class="op">=</span> <span class="op">:</span>pond <span class="op">=&gt;</span> [<span class="op">:</span>clear, <span class="op">:</span>light_infection, <span class="op">:</span>heavy_infection]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>swabs <span class="op">=</span> <span class="op">:</span>swabs <span class="op">=&gt;</span> [<span class="op">:</span>low, <span class="op">:</span>high]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>action <span class="op">=</span> <span class="op">:</span>action <span class="op">=&gt;</span> [<span class="op">:</span>no_intervention, <span class="op">:</span>treat]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>frogs <span class="op">=</span> [<span class="fl">100</span> <span class="fl">60</span> <span class="fl">15</span>       <span class="co"># no intervention: frogs alive next year, by state of the pond</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>         <span class="fl">88</span> <span class="fl">85</span> <span class="fl">55</span>]       <span class="co"># treat</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>prior <span class="op">=</span> [<span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>, <span class="fl">3</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">5</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>survey <span class="op">=</span> [<span class="fl">9</span><span class="op">//</span><span class="fl">10</span> <span class="fl">1</span><span class="op">//</span><span class="fl">2</span> <span class="fl">1</span><span class="op">//</span><span class="fl">10</span>; <span class="fl">1</span><span class="op">//</span><span class="fl">10</span> <span class="fl">1</span><span class="op">//</span><span class="fl">2</span> <span class="fl">9</span><span class="op">//</span><span class="fl">10</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>diagram <span class="op">=</span> <span class="fu">decision_pipeline</span>(<span class="fu">belief_box</span>(<span class="op">:</span>prior, pond, prior),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">channel_box</span>(<span class="op">:</span>swab_survey, pond, swabs, survey),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">policy_box</span>(<span class="op">:</span>manager, swabs, action),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">utility_box</span>(<span class="op">:</span>frogs, (action, pond), frogs))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">value_of_information</span>(diagram)</span></code></pre></div>
+<pre><code>(act_now = 161//2, informed = 1627//20, evsi = 17//20, perfect = 173//2, evpi = 6//1)</code></pre>
+<h1 id="one-decision-a-linear-programme">One decision: a linear
+programme</h1>
+<p><code>policy_program</code> compiles the diagram. The variables
+<code>π[a, z]</code> are the probability of taking action <code>a</code>
+after survey result <code>z</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>program <span class="op">=</span> <span class="fu">policy_program</span>(diagram)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(program.model)</span></code></pre></div>
+<pre><code>Max 543//10 π[1,1] + 167//10 π[1,2] + 1069//20 π[2,1] + 541//20 π[2,2]
+Subject to
+ π[1,1] + π[2,1] = 1//1
+ π[1,2] + π[2,2] = 1//1
+ π[1,1] ≥ 0//1
+ π[2,1] ≥ 0//1
+ π[1,2] ≥ 0//1
+ π[2,2] ≥ 0//1</code></pre>
+<p>The objective coefficients are the expected frogs of each action
+jointly with each survey result; the two equality constraints say that
+after each result some action is taken. The model has rational
+coefficients, because the diagram did.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>solution <span class="op">=</span> <span class="fu">solve_program</span>(program)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>(status<span class="op">=</span>solution.status, frogs<span class="op">=</span>solution.objective, exact<span class="op">=</span>solution.exact, route<span class="op">=</span>solution.route)</span></code></pre></div>
+<pre><code>(status = :optimal, frogs = 1627//20, exact = true, route = :internal)</code></pre>
+<p>The optimum equals the value read off the diagram, and the best
+policy takes one action after each result: for one decision the linear
+programme is exact, and no integer variables are needed (a theorem of
+the accompanying Lean development,
+<code>policyProgramme_optimum</code>).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> <span class="fu">solve_policy_program</span>(diagram)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>no_intervention <span class="op">=</span> <span class="fu">pipeline_value</span>(diagram; policies<span class="op">=</span>(<span class="op">:</span>manager <span class="op">=&gt;</span> <span class="op">:</span>no_intervention))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>(policy<span class="op">=</span><span class="fu">Dict</span>(z <span class="op">=&gt;</span> best.actions[<span class="fu">findfirst</span>(isone, best.policy[<span class="op">:</span>, i])]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             <span class="cf">for</span> (i, z) <span class="kw">in</span> <span class="fu">enumerate</span>(best.observations)),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a> frogs<span class="op">=</span>best.value, gain_over_no_intervention<span class="op">=</span>best.value <span class="op">-</span> no_intervention,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a> same_as_the_diagram<span class="op">=</span>best.value <span class="op">==</span> <span class="fu">value_with_information</span>(diagram))</span></code></pre></div>
+<pre><code>(policy = Dict(:high =&gt; :treat, :low =&gt; :no_intervention), frogs = 1627//20, gain_over_no_intervention = 207//20, same_as_the_diagram = true)</code></pre>
+<p>The same model by two other solvers. An exact solver works on the
+rational model directly; a floating-point solver’s answer is rounded and
+then verified exactly.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>by_cdd <span class="op">=</span> <span class="fu">solve_program</span>(<span class="fu">policy_program</span>(diagram); optimizer<span class="op">=</span>CDDLib.Optimizer{<span class="dt">Rational</span>{<span class="dt">BigInt</span>}})</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>by_highs <span class="op">=</span> <span class="fu">solve_program</span>(<span class="fu">policy_program</span>(diagram); optimizer<span class="op">=</span>HiGHS.Optimizer)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>[(route<span class="op">=</span>s.route, frogs<span class="op">=</span>s.objective, exact<span class="op">=</span>s.exact) for s <span class="kw">in</span> (solution, by_cdd, by_highs)]</span></code></pre></div>
+<pre><code>3-element Vector{@NamedTuple{route::Symbol, frogs::Rational{BigInt}, exact::Bool}}:
+ (route = :internal, frogs = 1627//20, exact = 1)
+ (route = :exact_optimizer, frogs = 1627//20, exact = 1)
+ (route = :float_optimizer, frogs = 1627//20, exact = 1)</code></pre>
+<h1 id="a-budget">A budget</h1>
+<p>Suppose this is one of many similar ponds and the field team can
+treat, on average, one pond in five. That is a bound on the expected
+value of a quantity: one for a treated pond, nothing otherwise.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>capacity <span class="op">=</span> <span class="fu">expectation_constraint</span>(<span class="op">:</span>field_team, action, [<span class="fl">0</span>, <span class="fl">1</span>]; at_most<span class="op">=</span><span class="fl">1</span> <span class="op">//</span> <span class="fl">5</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>limited <span class="op">=</span> <span class="fu">solve_policy_program</span>(diagram; constraints<span class="op">=</span>[capacity])</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>(<span class="fu">vcat</span>(<span class="st">&quot;after the survey shows&quot;</span>, <span class="fu">String</span>.(limited.observations)),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         [<span class="fu">vcat</span>(<span class="fu">String</span>(a), [limited.policy[i, z] for z <span class="kw">in</span> <span class="fu">eachindex</span>(limited.observations)])</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>          for (i, a) <span class="kw">in</span> <span class="fu">enumerate</span>(limited.actions)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">after the survey shows</th>
+<th style="text-align: right;">low</th>
+<th style="text-align: right;">high</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">no_intervention</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.47</td>
+</tr>
+<tr>
+<td style="text-align: left;">treat</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.53</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb14"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>(frogs_with_the_budget<span class="op">=</span>limited.value, frogs_without<span class="op">=</span>best.value,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a> gain_over_no_intervention<span class="op">=</span>limited.value <span class="op">-</span> no_intervention,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a> deterministic<span class="op">=</span>limited.deterministic)</span></code></pre></div>
+<pre><code>(frogs_with_the_budget = 2905//38, frogs_without = 1627//20, gain_over_no_intervention = 207//38, deterministic = false)</code></pre>
+<p>With the budget the best policy randomises: after a high count, treat
+with the probability that just uses the capacity. A solver that searches
+over deterministic policies, as the influence-diagram solvers of the
+ecosystem do, cannot return it, and has no way to be told about the
+budget in the first place. Restricting to deterministic policies under
+the same budget does worse:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>deterministic <span class="op">=</span> <span class="fu">solve_strategy_program</span>(<span class="fu">strategy_program</span>(diagram; constraints<span class="op">=</span>[capacity]))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>(frogs<span class="op">=</span>deterministic.value, policy<span class="op">=</span>deterministic.policies[<span class="op">:</span>manager])</span></code></pre></div>
+<pre><code>(frogs = 71//1, policy = [:no_intervention, :no_intervention])</code></pre>
+<h1 id="a-cap-on-a-probability">A cap on a probability</h1>
+<p>A side condition can also bound the chance of an event. An infected
+pond that is left untreated is a source of infection for its neighbours.
+Suppose the regional plan accepts a probability of at most one in ten
+that this pond is left as a source. The event is a statement about two
+wires, the action and the state of the pond, and its probability is
+linear in the policy.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">left_as_source</span>(a, s) <span class="op">=</span> a <span class="op">===</span> <span class="op">:</span>no_intervention <span class="op">&amp;&amp;</span> s <span class="op">!==</span> <span class="op">:</span>clear</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>few_sources <span class="op">=</span> <span class="fu">chance_constraint</span>(<span class="op">:</span>left_as_a_source, (action, pond), left_as_source; at_most<span class="op">=</span><span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>cautious <span class="op">=</span> <span class="fu">solve_policy_program</span>(diagram; constraints<span class="op">=</span>[few_sources])</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>(<span class="fu">vcat</span>(<span class="st">&quot;after the survey shows&quot;</span>, <span class="fu">String</span>.(cautious.observations)),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>         [<span class="fu">vcat</span>(<span class="fu">String</span>(a), [cautious.policy[i, z] for z <span class="kw">in</span> <span class="fu">eachindex</span>(cautious.observations)])</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>          for (i, a) <span class="kw">in</span> <span class="fu">enumerate</span>(cautious.actions)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">after the survey shows</th>
+<th style="text-align: right;">low</th>
+<th style="text-align: right;">high</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">no_intervention</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">treat</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb19"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(frogs<span class="op">=</span>cautious.value, gain_over_no_intervention<span class="op">=</span>cautious.value <span class="op">-</span> no_intervention)</span></code></pre></div>
+<pre><code>(frogs = 81//1, gain_over_no_intervention = 10//1)</code></pre>
+<h1 id="several-decisions-a-mixed-integer-programme">Several decisions:
+a mixed-integer programme</h1>
+<p>With more than one decision the expected count is no longer linear in
+the policies, because the probability of reaching the second decision
+depends on the first. The standard remedy, used by
+DecisionProgramming.jl, is a programme with one binary variable for each
+local choice and one flow variable for each path through the
+diagram.</p>
+<p>Add a second decision: a second team visits later, sees its own
+survey but not the first one or what was done, and can remove infected
+animals.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>second_look <span class="op">=</span> <span class="op">:</span>second_look <span class="op">=&gt;</span> [<span class="op">:</span>low, <span class="op">:</span>high]</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>follow_up <span class="op">=</span> <span class="op">:</span>follow_up <span class="op">=&gt;</span> [<span class="op">:</span>leave, <span class="op">:</span>remove_infected]</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>extra <span class="op">=</span> <span class="fu">zeros</span>(<span class="dt">Int</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span>)                    <span class="co"># extra frogs alive: [action, follow_up, pond]</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>extra[<span class="fl">1</span>, <span class="fl">2</span>, <span class="op">:</span>] <span class="op">=</span> [<span class="op">-</span><span class="fl">6</span>, <span class="fl">20</span>, <span class="fl">60</span>]                  <span class="co"># removal after no treatment</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>extra[<span class="fl">2</span>, <span class="fl">2</span>, <span class="op">:</span>] <span class="op">=</span> [<span class="op">-</span><span class="fl">6</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">2</span>]                   <span class="co"># removal after treatment</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>first_visit <span class="op">=</span> <span class="fu">decision_pipeline</span>(<span class="fu">belief_box</span>(<span class="op">:</span>prior, pond, prior),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">channel_box</span>(<span class="op">:</span>swab_survey, pond, swabs, survey),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">policy_box</span>(<span class="op">:</span>manager, swabs, action),</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">utility_box</span>(<span class="op">:</span>frogs, (action, pond), frogs);</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                                outputs<span class="op">=</span>[<span class="op">:</span>pond, <span class="op">:</span>action])</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>second_visit <span class="op">=</span> <span class="fu">decision_pipeline</span>(<span class="fu">channel_box</span>(<span class="op">:</span>second_survey, pond, second_look, survey),</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>                                 <span class="fu">policy_box</span>(<span class="op">:</span>second_team, second_look, follow_up),</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                                 <span class="fu">utility_box</span>(<span class="op">:</span>extra_frogs, (action, follow_up, pond), extra);</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>                                 inputs<span class="op">=</span>[<span class="op">:</span>pond, <span class="op">:</span>action])</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>both <span class="op">=</span> <span class="fu">compose</span>(first_visit, second_visit)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>program2 <span class="op">=</span> <span class="fu">strategy_program</span>(both)</span></code></pre></div>
+<pre><code>StrategyProgram(1 part, 56 variables, 2 decisions)</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>solved <span class="op">=</span> <span class="fu">solve_strategy_program</span>(program2)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>(frogs<span class="op">=</span>solved.value, manager<span class="op">=</span>solved.policies[<span class="op">:</span>manager], second_team<span class="op">=</span>solved.policies[<span class="op">:</span>second_team],</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a> strategies_examined<span class="op">=</span>solved.strategies, gain_over_no_intervention<span class="op">=</span>solved.value <span class="op">-</span> no_intervention)</span></code></pre></div>
+<pre><code>(frogs = 86//1, manager = [:no_intervention, :no_intervention], second_team = [:remove_infected, :remove_infected], strategies_examined = 16, gain_over_no_intervention = 15//1)</code></pre>
+<p>Without a solver the package enumerates the strategies exactly. With
+a mixed-integer solver the model is solved in floating point, and the
+strategy it returns is then evaluated on the diagram in exact
+arithmetic:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>by_solver <span class="op">=</span> <span class="fu">solve_strategy_program</span>(program2; optimizer<span class="op">=</span>HiGHS.Optimizer)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>(frogs<span class="op">=</span>by_solver.value, route<span class="op">=</span>by_solver.route, same<span class="op">=</span>by_solver.value <span class="op">==</span> solved.value)</span></code></pre></div>
+<pre><code>(frogs = 86//1, route = :optimizer, same = true)</code></pre>
+<h2 id="programmes-compose-solutions-do-not">Programmes compose;
+solutions do not</h2>
+<p>The two visits were built as two diagrams and joined. Their
+programmes join in the same way: the probability of each joint value of
+the shared wires is a quantity that both programmes mention, and the
+objectives add.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>joined <span class="op">=</span> <span class="fu">compose</span>(<span class="fu">strategy_program</span>(first_visit), <span class="fu">open_strategy_program</span>(second_visit))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>(parts<span class="op">=</span><span class="fu">length</span>(joined.parts), frogs<span class="op">=</span><span class="fu">solve_strategy_program</span>(joined).value,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a> same_as_the_glued_diagram<span class="op">=</span><span class="fu">solve_strategy_program</span>(joined).value <span class="op">==</span> solved.value)</span></code></pre></div>
+<pre><code>(parts = 2, frogs = 86//1, same_as_the_glued_diagram = true)</code></pre>
+<p>What is composed is the <em>statement</em> of the problem. It is
+still solved as one problem: the best policy of the first visit depends
+on what the second team will do with what it leaves behind. Optimising
+the first visit alone gives a different policy for it:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>alone <span class="op">=</span> <span class="fu">solve_strategy_program</span>(<span class="fu">strategy_program</span>(first_visit))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>(first_visit_alone<span class="op">=</span>alone.policies[<span class="op">:</span>manager], first_visit_in_context<span class="op">=</span>solved.policies[<span class="op">:</span>manager])</span></code></pre></div>
+<pre><code>(first_visit_alone = [:no_intervention, :treat], first_visit_in_context = [:no_intervention, :no_intervention])</code></pre>
+<h1 id="a-certificate">A certificate</h1>
+<p>For one decision, the optimum can be exported as a document that a
+proved checker verifies without trusting any solver: the problem, a best
+policy, and one number per survey result (the best expected count after
+that result) that proves that no policy does better.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>io <span class="op">=</span> <span class="fu">IOBuffer</span>()</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">export_policy_certificate</span>(io, diagram)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">String</span>(<span class="fu">take!</span>(io)))</span></code></pre></div>
+<pre><code>{
+  &quot;schema&quot;: &quot;policy-certificate/1&quot;,
+  &quot;payoff&quot;: [[&quot;100&quot;, &quot;60&quot;, &quot;15&quot;], [&quot;88&quot;, &quot;85&quot;, &quot;55&quot;]],
+  &quot;prior&quot;: [&quot;1/2&quot;, &quot;3/10&quot;, &quot;1/5&quot;],
+  &quot;likelihood&quot;: [[&quot;9/10&quot;, &quot;1/2&quot;, &quot;1/10&quot;], [&quot;1/10&quot;, &quot;1/2&quot;, &quot;9/10&quot;]],
+  &quot;policy&quot;: [[&quot;1&quot;, &quot;0&quot;], [&quot;0&quot;, &quot;1&quot;]],
+  &quot;dual&quot;: [&quot;543/10&quot;, &quot;541/20&quot;],
+  &quot;value&quot;: &quot;1627/20&quot;
+}</code></pre>
+<h1 id="summary">Summary</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">one decision</th>
+<th style="text-align: left;">several decisions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">programme</td>
+<td style="text-align: left;">linear (<code>policy_program</code>)</td>
+<td style="text-align: left;">mixed-integer
+(<code>strategy_program</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;">policies</td>
+<td style="text-align: left;">may randomise</td>
+<td style="text-align: left;">deterministic</td>
+</tr>
+<tr>
+<td style="text-align: left;">solved by</td>
+<td style="text-align: left;">exact simplex, or any JuMP solver</td>
+<td style="text-align: left;">exact enumeration, or any mixed-integer
+solver</td>
+</tr>
+<tr>
+<td style="text-align: left;">side conditions</td>
+<td style="text-align: left;">budgets and chance constraints</td>
+<td style="text-align: left;">the same</td>
+</tr>
+<tr>
+<td style="text-align: left;">composes</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">programmes of parts, not their
+solutions</td>
+</tr>
+</tbody>
+</table>
+<p>Prior art: the path formulation for several decisions is that of
+Salo, Andelmin and Oliveira (2022), implemented in
+DecisionProgramming.jl; joining programmes along shared variables
+follows the open optimisation problems of Hanks and co-authors (2024),
+implemented in AlgebraicOptimization.jl. Neither package is a
+dependency.</p>
+</body>
+</html>

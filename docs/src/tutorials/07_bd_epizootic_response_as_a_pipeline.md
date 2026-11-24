@@ -1,0 +1,430 @@
+# Bd epizootic response as a pipeline
+Simon Frost
+
+- [Motivation](#motivation)
+  - [What this is and is not](#what-this-is-and-is-not)
+- [The cached table, by group](#the-cached-table-by-group)
+- [The same analysis as a pipeline](#the-same-analysis-as-a-pipeline)
+- [What the pipeline adds](#what-the-pipeline-adds)
+  - [1. A survey as a chain: swabs, assay,
+    report](#1-a-survey-as-a-chain-swabs-assay-report)
+  - [2. A limit on handling](#2-a-limit-on-handling)
+  - [3. What an error in the weights can
+    cost](#3-what-an-error-in-the-weights-can-cost)
+- [Summary](#summary)
+
+## Motivation
+
+The last vignette of `DecisionAnalysis.jl` (its number 14) analyses the
+response to an outbreak of *Batrachochytrium dendrobatidis* (Bd), the
+fungus that causes chytridiomycosis, in a frog pond, from a cached table
+of model runs. This vignette takes the same table, writes the analysis
+as a pipeline, checks that the pipeline gives the same numbers, and then
+does three things that are awkward without the diagram: a survey as a
+chain of observation processes, a limit on how many frogs the field team
+can handle, and a statement of what an error in the weights can cost.
+
+### What this is and is not
+
+- The **model** is the stochastic individual-based model of Drawert,
+  Griesemer, Petzold and Briggs (2017, *J. R. Soc. Interface*
+  14:20170480,
+  [doi:10.1098/rsif.2017.0480](https://doi.org/10.1098/rsif.2017.0480)),
+  as implemented in `Chytridiomycosis.jl`. The parameter points are the
+  authors’.
+- The **runs** are not the authors’: `Chytridiomycosis.jl` ran the model
+  at 100 of the authors’ 2,132 parameter points under ten actions, 30
+  times each, and stores the result. Numbers read from that table are
+  labelled *from the cached table*.
+- **Everything else is illustrative**: the weights on the groups, the
+  utility, every number that describes the survey, and the handling
+  limit. **Nothing here is a published result**, and none of it is
+  advice for a real pond.
+
+The currency is frogs. No cost in money appears: none is published for
+this system.
+
+## The cached table, by group
+
+``` julia
+using CategoricalDecisionAnalysis
+using Chytridiomycosis: Chytridiomycosis, load_drawert_decisions
+include(joinpath("..", "_common.jl"))
+
+function read_draws(path)
+    lines = readlines(path)
+    names = Tuple(Symbol.(split(lines[1], ',')))
+    return map(lines[2:end]) do line
+        v = split(line, ',')
+        return NamedTuple{names}((parse(Int, v[1]), String(v[2]), parse.(Float64, v[3:end])...))
+    end
+end
+runs = load_drawert_decisions()
+draws = read_draws(joinpath(pkgdir(Chytridiomycosis), "data", "drawert2017", "decision_draws.csv"))
+table = OutcomeTable(runs; draw=:draw_id, action=:action, replicate=:replicate,
+                     outcomes=[:survivors, :handled], status=:status, parameters=draws,
+                     key=:draw_id, weights=:weight)
+```
+
+    OutcomeTable(100 draws × 10 actions × 30 replicates; outcomes survivors, handled; 30000 runs ok, 0 failed, 0 absent)
+
+The actions are no intervention (`none`, **the baseline**) and one pulse
+at 75% coverage of one of three kinds (treat the frogs with an
+antifungal, cull frogs, clean the water) on day 14, 28 or 56 after Bd
+arrives. The authors sort their parameter points into five groups, A to
+E, by what the model does there without intervention (A: the frogs
+always go extinct; D: Bd usually dies out; B, C and E in between or
+variable).
+
+The core analysis, in `DecisionAnalysis` alone: the utility is the
+number of frogs alive at the end of a run, and `conditional_problem`
+collapses the draws onto the group.
+
+``` julia
+core = DecisionProblem(table, IndividualsUtility(:survivors); baseline=:none)
+by_group = conditional_problem(core, :group)
+by_group.payoff
+```
+
+**PayoffTable{Float64}: 10 actions × 5 states**
+
+| action                      |         `A` |      `B` |     `C` |     `D` |     `E` |
+|:----------------------------|------------:|---------:|--------:|--------:|--------:|
+| `none`                      | 0.000775194 |  1.28611 | 22.6686 | 77.5957 |   24.76 |
+| `clean_frogs_d14_f75`       |     3.57752 |  24.7583 | 34.7314 |  78.471 |   25.06 |
+| `clean_frogs_d28_f75`       |     1.81628 |  18.5417 | 36.4275 | 78.0087 |   25.06 |
+| `clean_frogs_d56_f75`       |    0.124806 |  7.66944 | 30.7235 | 77.8609 | 25.0733 |
+| `cull_frogs_d14_f75`        |     2.56512 |    14.65 | 12.3333 | 19.5986 | 19.9667 |
+| `cull_frogs_d28_f75`        |     1.41938 |  12.2167 | 14.2549 | 36.6203 | 19.3933 |
+| `cull_frogs_d56_f75`        |    0.643411 |  8.57222 | 15.7588 | 58.8319 | 19.8667 |
+| `clean_environment_d14_f75` |         0.0 |  1.44444 | 22.0745 | 77.6609 |   25.04 |
+| `clean_environment_d28_f75` |         0.0 | 0.863889 | 22.8196 | 77.6246 | 24.8667 |
+| `clean_environment_d56_f75` | 0.000775194 |  1.31667 | 23.7392 | 77.6275 |    25.0 |
+
+Every entry is *from the cached table*: the mean number of surviving
+frogs for an action in a group. The weights of the groups are the design
+weights of the sample, used as a belief. That is an **assumption**
+(every design point equally likely to be the pond at hand), not
+knowledge.
+
+``` julia
+md_table(["group", "weight"], [[String(g), w] for (g, w) in zip(state_labels(by_group),
+                                                             probabilities(by_group.belief))]; digits=3)
+```
+
+| group | weight |
+|:------|-------:|
+| A     |   0.65 |
+| B     |  0.051 |
+| C     |  0.104 |
+| D     |  0.186 |
+| E     |  0.009 |
+
+## The same analysis as a pipeline
+
+Three boxes: what is believed about the group, the decision, and the
+frogs counted.
+
+``` julia
+group = :group => state_labels(by_group)
+action = :action => action_labels(by_group)
+pond = decision_pipeline(belief_box(:design_weights, group, by_group.belief),
+                         policy_box(:manager, (), action),
+                         utility_box(:survivors, (action, group), by_group.payoff.Q))
+```
+
+    DecisionPipeline: 3 boxes, inputs Symbol[], outputs Symbol[]
+      belief      design_weights : I → group
+      policy      manager : I → action   (open)
+      utility     survivors : action ⊗ group → ℝ
+
+The pipeline reproduces the numbers of the core analysis.
+
+``` julia
+from_pipeline = decide(pond, MaxExpectedUtility())
+from_core = decide(core, MaxExpectedUtility())          # over the 100 draws, not the groups
+gains = expected_gain_over_baseline(decision_problem(pond; baseline=:none))
+md_table(["action", "expected survivors: pipeline", "core", "gain over no intervention"],
+         [[a, from_pipeline.scores[i], from_core.scores[i], gains[i]]
+          for (i, a) in enumerate(action[2])])
+```
+
+| action | expected survivors: pipeline | core | gain over no intervention |
+|:---|---:|---:|---:|
+| `none` | 17.06 | 17.06 | 0 |
+| `clean_frogs_d14_f75` | 22 | 22 | 4.94 |
+| `clean_frogs_d28_f75` | 20.63 | 20.63 | 3.57 |
+| `clean_frogs_d56_f75` | 18.36 | 18.36 | 1.29 |
+| `cull_frogs_d14_f75` | 7.52 | 7.52 | -9.54 |
+| `cull_frogs_d28_f75` | 10.01 | 10.01 | -7.05 |
+| `cull_frogs_d56_f75` | 13.6 | 13.6 | -3.46 |
+| `clean_environment_d14_f75` | 17.02 | 17.02 | -0.04 |
+| `clean_environment_d28_f75` | 17.06 | 17.06 | 0 |
+| `clean_environment_d56_f75` | 17.18 | 17.18 | 0.12 |
+
+``` julia
+(same_scores=from_pipeline.scores ≈ from_core.scores,
+ same_choice=from_pipeline.chosen == from_core.chosen == decide(by_group, MaxExpectedUtility()).chosen,
+ same_evpi=evpi(pond) ≈ evpi(by_group),
+ same_regret_table=regret_table(pond) ≈ regret_table(by_group))
+```
+
+    (same_scores = true, same_choice = true, same_evpi = true, same_regret_table = true)
+
+Treating the frogs early is best under these weights, by about five
+frogs per pond over no intervention; culling loses frogs. With the
+groups as scenarios and no weights, the belief box is swapped for a set
+of possibilities and the robust rules of the core apply, with the same
+answers as in the core vignette:
+
+``` julia
+scenarios = replace_box(pond, :design_weights, ScenarioSet(group[2]))
+by_group_scenarios = DecisionProblem(by_group.payoff, ScenarioSet(group[2]); baseline=:none)
+(maximin=decide(scenarios, Maximin()).chosen, minimax_regret=decide(scenarios, MinimaxRegret()).chosen,
+ same_as_core=decide(scenarios, Maximin()).chosen == decide(by_group_scenarios, Maximin()).chosen &&
+              decide(scenarios, MinimaxRegret()).chosen == decide(by_group_scenarios, MinimaxRegret()).chosen)
+```
+
+    (maximin = [:clean_frogs_d14_f75], minimax_regret = [:clean_frogs_d14_f75], same_as_core = true)
+
+How much would knowing the group be worth?
+
+``` julia
+(evpi_in_frogs=evpi(pond), gain_of_the_best_action=maximum(gains))
+```
+
+    (evpi_in_frogs = 0.17593808630394037, gain_of_the_best_action = 4.941064638372526)
+
+Very little: early treatment is the best action, or close to it, in
+every group, so knowing the group would rarely change what is done.
+
+## What the pipeline adds
+
+### 1. A survey as a chain: swabs, assay, report
+
+A survey before the decision does not reveal the group. It goes through
+three steps, each of which loses something. **Every number in this
+section is illustrative.**
+
+1.  **Swabs.** Frogs are swabbed; the infection load on the swabs (none,
+    low, high) depends on the group.
+2.  **Assay.** A qPCR classifies each batch of swabs, with errors.
+3.  **Report.** The laboratory reports positive or negative, and calls a
+    low qPCR signal positive only half the time.
+
+``` julia
+load = :swab_load => [:none, :low, :high]
+qpcr = :qpcr => [:negative, :low_positive, :high_positive]
+report = :report => [:negative, :positive]
+#                                    A     B     C     D     E
+swabs = channel_box(:swabs, group, load, [0.05 0.10 0.20 0.60 0.30
+                                          0.25 0.40 0.50 0.30 0.40
+                                          0.70 0.50 0.30 0.10 0.30])
+assay = channel_box(:assay, load, qpcr, [0.95 0.20 0.02; 0.05 0.70 0.18; 0.00 0.10 0.80])
+reporting = channel_box(:reporting, qpcr, report, [1.0 0.5 0.0; 0.0 0.5 1.0])
+surveyed = decision_pipeline(pond, swabs, assay, reporting)
+```
+
+    DecisionPipeline: 6 boxes, inputs Symbol[], outputs Symbol[]
+      belief      design_weights : I → group
+      policy      manager : I → action   (open)
+      utility     survivors : action ⊗ group → ℝ
+      channel     swabs : group → swab_load
+      channel     assay : swab_load → qpcr
+      channel     reporting : qpcr → report
+
+The manager can be handed the result at any stage of the chain. Reading
+the group itself is the perfect-information limit.
+
+``` julia
+reading(wire) = with_observation(surveyed, :manager, wire)
+stages = [:group, :swab_load, :qpcr, :report]
+informed = [solve_policy_program(reading(w)).value for w in stages]
+nothing_read = act_now_value(pond)
+md_table(["the manager reads", "expected survivors", "value of the information (frogs)",
+          "gain over no intervention"],
+         [[w, v, v - nothing_read, v - from_pipeline.scores[1]] for (w, v) in zip(stages, informed)];
+         digits=4)
+```
+
+| the manager reads | expected survivors | value of the information (frogs) | gain over no intervention |
+|:---|---:|---:|---:|
+| `group` | 22.178 | 0.1759 | 5.117 |
+| `swab_load` | 22.0021 | 0 | 4.9411 |
+| `qpcr` | 22.0021 | 0 | 4.9411 |
+| `report` | 22.0021 | 0 | 4.9411 |
+
+The value cannot rise along the chain: each stage is the one before
+passed through a noisy step. Here it is zero from the swabs onwards. No
+survey result changes the best action, because the decision hardly
+depends on the group, and even perfect knowledge of the group is worth a
+fraction of a frog. The diagram also says, without any arithmetic, that
+the report adds nothing once the qPCR result is read:
+
+``` julia
+(report_given_qpcr=observation_can_matter(reading(:qpcr), :report),
+ qpcr_given_report=observation_can_matter(reading(:report), :qpcr))
+```
+
+    (report_given_qpcr = false, qpcr_given_report = true)
+
+### 2. A limit on handling
+
+Treating or culling means catching frogs. The cached table records how
+many were handled in each run (*from the cached table*):
+
+``` julia
+handled = conditional_problem(DecisionProblem(table, IndividualsUtility(:handled); baseline=:none), :group)
+handled.payoff
+```
+
+**PayoffTable{Float64}: 10 actions × 5 states**
+
+| action                      |     `A` |     `B` |     `C` |     `D` |     `E` |
+|:----------------------------|--------:|--------:|--------:|--------:|--------:|
+| `none`                      |     0.0 |     0.0 |     0.0 |     0.0 |     0.0 |
+| `clean_frogs_d14_f75`       | 76.7729 | 69.0028 | 40.8196 |  58.929 | 59.0333 |
+| `clean_frogs_d28_f75`       | 75.6248 | 68.7972 | 38.0765 | 41.4145 | 59.6067 |
+| `clean_frogs_d56_f75`       | 30.0512 | 65.2722 | 34.2941 | 19.0493 | 59.1333 |
+| `cull_frogs_d14_f75`        | 76.7729 | 69.0028 | 40.8196 |  58.929 | 59.0333 |
+| `cull_frogs_d28_f75`        | 75.6248 | 68.7972 | 38.0765 | 41.4145 | 59.6067 |
+| `cull_frogs_d56_f75`        | 30.0512 | 65.2722 | 34.2941 | 19.0493 | 59.1333 |
+| `clean_environment_d14_f75` |     0.0 |     0.0 |     0.0 |     0.0 |     0.0 |
+| `clean_environment_d28_f75` |     0.0 |     0.0 |     0.0 |     0.0 |     0.0 |
+| `clean_environment_d56_f75` |     0.0 |     0.0 |     0.0 |     0.0 |     0.0 |
+
+Suppose the field team can handle, on average over the ponds it is
+responsible for, at most 20 frogs per pond (**illustrative**). Early
+treatment handles about 70. That limit is a side condition on the
+policy, which the rule-based analysis has no place for; in the compiled
+form of the diagram it is one more constraint.
+
+``` julia
+limit = expectation_constraint(:field_team, (action, group), handled.payoff.Q; at_most=20)
+function under_limit(p)
+    s = solve_policy_program(p; constraints=[limit])
+    return (frogs=s.value, deterministic=s.deterministic, policy=s.policy)
+end
+unread = under_limit(pond)
+rows = Any[["nothing", unread.frogs, 0.0, unread.frogs - from_pipeline.scores[1]]]
+for w in stages
+    r = under_limit(reading(w))
+    push!(rows, [w, r.frogs, r.frogs - unread.frogs, r.frogs - from_pipeline.scores[1]])
+end
+md_table(["the manager reads", "expected survivors under the limit",
+          "value of the information (frogs)", "gain over no intervention"], rows; digits=3)
+```
+
+| the manager reads | expected survivors under the limit | value of the information (frogs) | gain over no intervention |
+|:---|---:|---:|---:|
+| nothing | 18.576 | 0 | 1.515 |
+| `group` | 20.286 | 1.71 | 3.225 |
+| `swab_load` | 18.892 | 0.316 | 1.831 |
+| `qpcr` | 18.752 | 0.176 | 1.691 |
+| `report` | 18.578 | 0.003 | 1.517 |
+
+With the limit the best policy without a survey treats only some ponds,
+chosen by lot. (The other action in the mixture, cleaning the water
+late, handles no frogs; its difference from no intervention is within
+the simulation error of the table, as the core vignette shows.)
+
+``` julia
+md_table(["action", "probability"],
+         [[a, unread.policy[i, 1]] for (i, a) in enumerate(action[2]) if unread.policy[i, 1] > 1e-9];
+         digits=3)
+```
+
+| action                      | probability |
+|:----------------------------|------------:|
+| `clean_frogs_d14_f75`       |       0.289 |
+| `clean_environment_d56_f75` |       0.711 |
+
+And now information is worth something. When only some ponds can be
+treated, it matters which: the survey lets the team spend its handling
+where a treated pond gains most. The value of the same survey, in frogs
+per pond:
+
+``` julia
+md_table(["the manager reads", "without the limit", "with the limit"],
+         [[w, informed[i] - nothing_read, rows[i + 1][3]] for (i, w) in enumerate(stages)];
+         digits=3)
+```
+
+| the manager reads | without the limit | with the limit |
+|:------------------|------------------:|---------------:|
+| `group`           |             0.176 |           1.71 |
+| `swab_load`       |                 0 |          0.316 |
+| `qpcr`            |                 0 |          0.176 |
+| `report`          |                 0 |          0.003 |
+
+With the limit the value is positive and falls at every step of the
+chain; by the time the result has been reduced to a positive or negative
+report almost none is left. The conclusion that a survey is worthless
+was a conclusion about a manager with no limit on handling.
+
+### 3. What an error in the weights can cost
+
+The design weights are an assumption. Suppose the true weights of the
+groups differ from them by at most ε in total variation (an ε share of
+the probability moved from some groups to others). The diagram returns a
+bound on the frogs lost by deciding with the design weights.
+
+``` julia
+function bound_at(ε)
+    stated = with_error(pond, :design_weights => ε)
+    return (ε=ε, pipeline_bound=fidelity_bound(stated),
+            sharper_bound=decision_loss_bound(by_group, ε))
+end
+[bound_at(ε) for ε in (0.01, 0.05, 0.1)]
+```
+
+    3-element Vector{@NamedTuple{ε::Float64, pipeline_bound::Float64, sharper_bound::Float64}}:
+     (ε = 0.01, pipeline_bound = 1.5694202898550722, sharper_bound = 1.5547212672733397)
+     (ε = 0.05, pipeline_bound = 7.847101449275361, sharper_bound = 7.773606336366699)
+     (ε = 0.1, pipeline_bound = 15.694202898550722, sharper_bound = 15.547212672733398)
+
+The pipeline’s bound uses the range of the count over all actions and
+groups; the core’s `decision_loss_bound` uses the largest range of a
+single action and is sharper when the payoff table is at hand (here the
+two are close). Both are guarantees and both are loose: at ε = 0.01 the
+bound is about a frog and a half, and at ε = 0.05 it already exceeds the
+gain of the best action over no intervention. The loss that actually
+occurs for a few particular shifts of the weights:
+
+``` julia
+weights = probabilities(by_group.belief)
+function actual_loss(shifted)
+    truth = replace_box(pond, :design_weights, shifted)
+    chosen = first_choice(decide(pond, MaxExpectedUtility()))
+    return act_now_value(truth) - pipeline_value(truth; policies=(:manager => chosen))
+end
+shift(from, to, ε) = (w = copy(weights); w[from] -= ε; w[to] += ε; w)
+md_table(["shift of 0.1 of the weight", "frogs lost by deciding with the design weights"],
+         [["from A to D", actual_loss(shift(1, 4, 0.1))], ["from A to C", actual_loss(shift(1, 3, 0.1))],
+          ["from D to B", actual_loss(shift(4, 2, 0.1))]]; digits=4)
+```
+
+| shift of 0.1 of the weight | frogs lost by deciding with the design weights |
+|:---------------------------|-----------------------------------------------:|
+| from A to D                |                                              0 |
+| from A to C                |                                              0 |
+| from D to B                |                                              0 |
+
+For errors in the weights of more than a few per cent the bound cannot
+certify the choice, and the direct check is the informative one: the
+choice does not move under these shifts.
+
+## Summary
+
+- The pipeline reproduces the core analysis: the same expected
+  survivors, the same best action, the same regret table and value of
+  perfect information, the same robust choices.
+- A survey written as a chain of three boxes has a value that cannot
+  rise from one step to the next, and the graph shows which readings are
+  redundant.
+- A handling limit is one constraint in the compiled diagram. It changes
+  the answer to “is a survey worth it”: without the limit the survey is
+  worth nothing, with it the survey helps to decide which ponds are
+  treated.
+- The fidelity bound is stated with its limits: here it certifies the
+  choice only for small errors in the weights.

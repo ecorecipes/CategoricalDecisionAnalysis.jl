@@ -1,0 +1,41 @@
+name = "categorical_decision_analysis_proofs"
+defaultTargets = ["CategoricalDecisionAnalysisProofs"]
+# Share one dependency checkout (Mathlib ~7 GB) across the ecosystem's proofs/ projects. See ADR 0005.
+packagesDir = "../../.lake-packages"
+
+# mdgen turns the `/-! ... -/` module docs into Markdown (`make mdgen`).
+# Pinned to the tag matching the toolchain. Listed before mathlib: Lake lets the *last*
+# `require` win, so Mathlib's pins take precedence and `lake exe cache get` computes the right
+# hashes.
+[[require]]
+name = "mdgen"
+git = "https://github.com/Seasawher/mdgen"
+rev = "v4.30.0"
+
+# Pin Mathlib to the same tag as the toolchain (Lean v4.30.0), as every sibling project does,
+# so that the shared checkout and its prebuilt .oleans are reused.
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.30.0"
+
+# Finite kernels (`Kernel`, `comp`, `tensor`, `FinStoch`): C1 is imported, not reproved.
+[[require]]
+name = "finite_kernels_proofs"
+path = "../../FiniteKernels.jl/proofs"
+
+# The core decision-analysis definitions (`expectedUtility`, `valueWithInformation`, `garble`,
+# `IsGarblingOf`, `evpi`, `evppi`, `regret`, `totalVariation`, `IsDeficientWithin`, credal
+# rules, Ville's alternative). Nothing of these is redefined here.
+[[require]]
+name = "decision_analysis_proofs"
+path = "../../DecisionAnalysis.jl/proofs"
+
+[[lean_lib]]
+name = "CategoricalDecisionAnalysisProofs"
+
+# `lake exe check_certificate FILE.json`: parse a certificate document, dispatch on its
+# `"schema"`, and decide it over ℚ with the proved checkers of `Certificate/`.
+[[lean_exe]]
+name = "check_certificate"
+root = "CheckCertificate"

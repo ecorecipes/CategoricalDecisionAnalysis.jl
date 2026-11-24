@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Simon Frost" />
+  <title>Chains of observation: sampling, assay, reporting</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+html { font-size: 17px; }
+body {
+font-family: "STIX Two Text", "Source Serif 4", Georgia, "Times New Roman", serif;
+line-height: 1.5; color: #1a1a1a; background: #fdfdfd;
+max-width: 50em; margin: 0 auto; padding: 2em 1.5em 4em;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+h1.title { margin-top: 0.5em; }
+p.author { color: #555; }
+a { color: #1f5fa8; }
+code, pre {
+font-family: "JuliaMono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+font-size: 0.86em;
+}
+pre { background: #f4f4f2; padding: 0.8em 1em; overflow-x: auto; border-radius: 4px; }
+code { background: #f4f4f2; padding: 0.05em 0.25em; border-radius: 3px; }
+pre code { background: none; padding: 0; font-size: 1em; }
+table { border-collapse: collapse; margin: 1em 0; font-size: 0.95em; display: block; overflow-x: auto; }
+th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; }
+thead th { border-bottom: 2px solid #888; }
+img { max-width: 100%; height: auto; }
+nav#TOC { background: #f4f4f2; padding: 0.6em 1em; border-radius: 4px; }
+nav#TOC ul { margin: 0.2em 0; padding-left: 1.2em; }
+@media (prefers-color-scheme: dark) {
+body { color: #e6e6e6; background: #1c1c1e; }
+a { color: #8ab4f8; }
+pre, code, nav#TOC { background: #2a2a2d; }
+th, td { border-bottom-color: #444; }
+img { background: #fff; }
+}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Chains of observation: sampling, assay, reporting</h1>
+<p class="author">Simon Frost</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#motivation" id="toc-motivation">Motivation</a></li>
+<li><a href="#the-decision" id="toc-the-decision">The decision</a></li>
+<li><a href="#three-observation-processes" id="toc-three-observation-processes">Three observation
+processes</a></li>
+<li><a href="#the-value-falls-along-the-chain" id="toc-the-value-falls-along-the-chain">The value falls along the
+chain</a></li>
+<li><a href="#the-graph-alone-can-say-that-an-observation-is-worthless" id="toc-the-graph-alone-can-say-that-an-observation-is-worthless">The
+graph alone can say that an observation is worthless</a></li>
+<li><a href="#updating-the-belief-with-a-report-that-never-comes" id="toc-updating-the-belief-with-a-report-that-never-comes">Updating the
+belief, with a report that never comes</a></li>
+<li><a href="#an-experiment-as-a-spread-of-beliefs" id="toc-an-experiment-as-a-spread-of-beliefs">An experiment as a spread
+of beliefs</a></li>
+<li><a href="#surveys-that-cannot-be-ranked-and-how-far-apart-they-are" id="toc-surveys-that-cannot-be-ranked-and-how-far-apart-they-are">Surveys
+that cannot be ranked, and how far apart they are</a></li>
+<li><a href="#partitions" id="toc-partitions">Partitions</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</nav>
+<h1 id="motivation">Motivation</h1>
+<p>What a manager reads is rarely the state of the world. It is a report
+of a laboratory result on a sample taken in the field, and each step can
+lose information. This vignette builds such a chain as three boxes in a
+row, shows that the value of the information can only fall along it, and
+uses the same machinery to say when one survey is at least as good as
+another for every decision.</p>
+<p><strong>All numbers are illustrative.</strong> Counts are of great
+crested newts, and every result is compared with no intervention.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CategoricalDecisionAnalysis</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="fu">joinpath</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;_common.jl&quot;</span>))</span></code></pre></div>
+<pre><code>Main.Notebook.voi_table</code></pre>
+<h1 id="the-decision">The decision</h1>
+<p>A pond is to be affected by drainage works. If newts are present and
+nothing is done, most are lost. The manager can do nothing, or fence the
+pond and move the newts to a receptor pond, which loses some animals to
+handling and is wasted effort if the pond is empty (a few animals from
+the receptor population are disturbed).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pond <span class="op">=</span> <span class="op">:</span>pond <span class="op">=&gt;</span> [<span class="op">:</span>unoccupied, <span class="op">:</span>small_population, <span class="op">:</span>large_population]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>action <span class="op">=</span> <span class="op">:</span>action <span class="op">=&gt;</span> [<span class="op">:</span>no_intervention, <span class="op">:</span>fence_and_move]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>newts <span class="op">=</span> [<span class="fl">0</span> <span class="fl">3</span> <span class="fl">12</span>       <span class="co"># no intervention: newts alive after the works, by state</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>         <span class="op">-</span><span class="fl">8</span> <span class="fl">16</span> <span class="fl">70</span>]    <span class="co"># fence and move: animals moved and alive, less those disturbed</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>prior <span class="op">=</span> [<span class="fl">7</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">5</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> <span class="fu">decision_pipeline</span>(<span class="fu">belief_box</span>(<span class="op">:</span>occupancy, pond, prior), <span class="fu">policy_box</span>(<span class="op">:</span>manager, (), action),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">utility_box</span>(<span class="op">:</span>newts, (action, pond), newts))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>problem <span class="op">=</span> <span class="fu">decision_problem</span>(base; baseline<span class="op">=:</span>no_intervention)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>problem.payoff</span></code></pre></div>
+<p><strong>PayoffTable{Int64}: 2 actions × 3 states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>unoccupied</code></th>
+<th style="text-align: right;"><code>small_population</code></th>
+<th style="text-align: right;"><code>large_population</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>no_intervention</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>fence_and_move</code></td>
+<td style="text-align: right;">-8</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">70</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb4"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(best_now<span class="op">=</span><span class="fu">first_choice</span>(<span class="fu">decide</span>(base, <span class="fu">MaxExpectedUtility</span>())),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> expected_gain_over_no_intervention<span class="op">=</span><span class="fu">expected_gain_over_baseline</span>(problem), evpi<span class="op">=</span><span class="fu">evpi</span>(base))</span></code></pre></div>
+<pre><code>(best_now = :fence_and_move, expected_gain_over_no_intervention = Rational{Int64}[0, 14//5], evpi = 28//5)</code></pre>
+<h1 id="three-observation-processes">Three observation processes</h1>
+<p>An environmental DNA survey has three steps.</p>
+<ol type="1">
+<li><strong>Sampling.</strong> Water is taken from the pond. Whether
+newt DNA is in the bottle depends on how many newts there are.</li>
+<li><strong>Assay.</strong> The laboratory runs a qPCR on the bottle,
+with its own false negatives and false positives.</li>
+<li><strong>Reporting.</strong> The laboratory reports “clear” or
+“flagged”. This laboratory flags only strong positives and never issues
+the third thing its form allows, “inconclusive”.</li>
+</ol>
+<p>Each is a channel box: a table of the probability of each output for
+each input.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>bottle <span class="op">=</span> <span class="op">:</span>bottle <span class="op">=&gt;</span> [<span class="op">:</span>no_dna, <span class="op">:</span>dna]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>qpcr <span class="op">=</span> <span class="op">:</span>qpcr <span class="op">=&gt;</span> [<span class="op">:</span>negative, <span class="op">:</span>weak_positive, <span class="op">:</span>strong_positive]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>report <span class="op">=</span> <span class="op">:</span>report <span class="op">=&gt;</span> [<span class="op">:</span>clear, <span class="op">:</span>flagged, <span class="op">:</span>inconclusive]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>sampling <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>sampling, pond, bottle, [<span class="fl">1</span> <span class="fl">3</span><span class="op">//</span><span class="fl">10</span> <span class="fl">1</span><span class="op">//</span><span class="fl">20</span>; <span class="fl">0</span> <span class="fl">7</span><span class="op">//</span><span class="fl">10</span> <span class="fl">19</span><span class="op">//</span><span class="fl">20</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>assay <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>assay, bottle, qpcr, [<span class="fl">9</span><span class="op">//</span><span class="fl">10</span> <span class="fl">1</span><span class="op">//</span><span class="fl">10</span>; <span class="fl">2</span><span class="op">//</span><span class="fl">25</span> <span class="fl">3</span><span class="op">//</span><span class="fl">10</span>; <span class="fl">1</span><span class="op">//</span><span class="fl">50</span> <span class="fl">3</span><span class="op">//</span><span class="fl">5</span>])</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>reporting <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>reporting, qpcr, report, [<span class="fl">1</span> <span class="fl">1</span><span class="op">//</span><span class="fl">2</span> <span class="fl">0</span>; <span class="fl">0</span> <span class="fl">1</span><span class="op">//</span><span class="fl">2</span> <span class="fl">1</span>; <span class="fl">0</span> <span class="fl">0</span> <span class="fl">0</span>])</span></code></pre></div>
+<pre><code>DecisionPipeline: 1 box, inputs [:qpcr], outputs [:report]
+  channel     reporting : qpcr → report</code></pre>
+<p>Boxes in a row are joined with <code>compose</code>, and the chain is
+a channel in its own right. Its table is the product of the three
+tables, which <code>evaluate</code> computes:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>chain <span class="op">=</span> <span class="fu">compose</span>(sampling, assay, reporting)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">first</span>(<span class="fu">reward_matrices</span>(<span class="fu">evaluate</span>(chain)))</span></code></pre></div>
+<pre><code>3×3 Matrix{Rational{Int64}}:
+ 47//50  457//1000   569//2000
+  3//50  543//1000  1431//2000
+   0        0           0</code></pre>
+<p>Rows are the three reports, columns the three states of the pond. The
+last row is zero: “inconclusive” never happens.</p>
+<h1 id="the-value-falls-along-the-chain">The value falls along the
+chain</h1>
+<p>The manager can be given the bottle (as if the DNA could be seen),
+the qPCR result, or the report. Each is the same diagram with the policy
+box reading a different wire.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>whole <span class="op">=</span> <span class="fu">decision_pipeline</span>(base, sampling, assay, reporting)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">reading</span>(wire) <span class="op">=</span> <span class="fu">with_observation</span>(whole, <span class="op">:</span>manager, wire)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>stages <span class="op">=</span> [<span class="op">:</span>pond, <span class="op">:</span>bottle, <span class="op">:</span>qpcr, <span class="op">:</span>report]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>values <span class="op">=</span> [<span class="fu">value_of_information</span>(<span class="fu">reading</span>(w)) for w <span class="kw">in</span> stages]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;the manager reads&quot;</span>, <span class="st">&quot;expected newts&quot;</span>, <span class="st">&quot;gain over no intervention&quot;</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;value of the information&quot;</span>],</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>         [[<span class="fu">String</span>(w), v.informed, v.informed <span class="op">-</span> <span class="fu">pipeline_value</span>(base; policies<span class="op">=</span>(<span class="op">:</span>manager <span class="op">=&gt;</span> <span class="op">:</span>no_intervention)),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>           v.evsi] for (w, v) <span class="kw">in</span> <span class="fu">zip</span>(stages, values)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">the manager reads</th>
+<th style="text-align: right;">expected newts</th>
+<th style="text-align: right;">gain over no intervention</th>
+<th style="text-align: right;">value of the information</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pond</td>
+<td style="text-align: right;">10.2</td>
+<td style="text-align: right;">8.4</td>
+<td style="text-align: right;">5.6</td>
+</tr>
+<tr>
+<td style="text-align: left;">bottle</td>
+<td style="text-align: right;">9.13</td>
+<td style="text-align: right;">7.33</td>
+<td style="text-align: right;">4.53</td>
+</tr>
+<tr>
+<td style="text-align: left;">qpcr</td>
+<td style="text-align: right;">7.94</td>
+<td style="text-align: right;">6.14</td>
+<td style="text-align: right;">3.34</td>
+</tr>
+<tr>
+<td style="text-align: left;">report</td>
+<td style="text-align: right;">7.03</td>
+<td style="text-align: right;">5.23</td>
+<td style="text-align: right;">2.43</td>
+</tr>
+</tbody>
+</table>
+<p>Reading the pond itself is perfect information. Each later stage is
+worth no more than the one before it. This is not a feature of these
+numbers: each stage is the previous one passed through a noisy channel,
+a <em>garbling</em>, and a garbling is never worth more to any
+decision-maker with a single prior (Blackwell’s theorem).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">experiment</span>(wire) <span class="op">=</span> <span class="fu">observation_experiment</span>(<span class="fu">reading</span>(wire))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>at_bottle, at_qpcr, at_report <span class="op">=</span> <span class="fu">experiment</span>(<span class="op">:</span>bottle), <span class="fu">experiment</span>(<span class="op">:</span>qpcr), <span class="fu">experiment</span>(<span class="op">:</span>report)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>(report_is_a_garbling_of_qpcr<span class="op">=</span><span class="fu">is_garbling</span>(at_report, at_qpcr),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a> qpcr_is_a_garbling_of_bottle<span class="op">=</span><span class="fu">is_garbling</span>(at_qpcr, at_bottle),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a> bottle_is_a_garbling_of_report<span class="op">=</span><span class="fu">is_garbling</span>(at_bottle, at_report))</span></code></pre></div>
+<pre><code>(report_is_a_garbling_of_qpcr = true, qpcr_is_a_garbling_of_bottle = true, bottle_is_a_garbling_of_report = false)</code></pre>
+<p>The order is a preorder on experiments, and the value of a fixed
+problem is a monotone map out of it. The package checks the property on
+random problems in its tests; here it is on this one:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">issorted</span>([<span class="fu">information_value</span>(problem, <span class="cn">e</span>) for <span class="cn">e</span> <span class="kw">in</span> (at_report, at_qpcr, at_bottle)])</span></code></pre></div>
+<pre><code>true</code></pre>
+<h1 id="the-graph-alone-can-say-that-an-observation-is-worthless">The
+graph alone can say that an observation is worthless</h1>
+<p>Once the manager reads the qPCR result, the report adds nothing:
+everything the report says about the pond it says through the qPCR. That
+follows from the shape of the diagram, with no arithmetic.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(report_can_matter_given_nothing<span class="op">=</span><span class="fu">observation_can_matter</span>(whole, <span class="op">:</span>report),</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a> report_can_matter_given_the_qpcr<span class="op">=</span><span class="fu">observation_can_matter</span>(<span class="fu">reading</span>(<span class="op">:</span>qpcr), <span class="op">:</span>report),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a> qpcr_can_matter_given_the_report<span class="op">=</span><span class="fu">observation_can_matter</span>(<span class="fu">reading</span>(<span class="op">:</span>report), <span class="op">:</span>qpcr))</span></code></pre></div>
+<pre><code>(report_can_matter_given_nothing = true, report_can_matter_given_the_qpcr = false, qpcr_can_matter_given_the_report = true)</code></pre>
+<p>A <code>false</code> is a guarantee for any tables whatever. A
+<code>true</code> only says that the value can be positive.</p>
+<h1 id="updating-the-belief-with-a-report-that-never-comes">Updating the
+belief, with a report that never comes</h1>
+<p>Bayes’ rule turns the chain round: from a report to a belief about
+the pond. <code>bayesian_inverse</code> computes it in two steps, the
+joint probability of state and report first and the division second, and
+does the division only where there is something to divide by.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>inverse <span class="op">=</span> <span class="fu">bayesian_inverse</span>(problem.belief, at_report)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;report&quot;</span>, <span class="st">&quot;probability&quot;</span>, <span class="st">&quot;P(unoccupied)&quot;</span>, <span class="st">&quot;P(small)&quot;</span>, <span class="st">&quot;P(large)&quot;</span>],</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>         [<span class="fu">vcat</span>(<span class="fu">String</span>(z), inverse.evidence[i], inverse.inverse[<span class="op">:</span>, i])</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>          for (i, z) <span class="kw">in</span> <span class="fu">enumerate</span>(inverse.signals)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">report</th>
+<th style="text-align: right;">probability</th>
+<th style="text-align: right;">P(unoccupied)</th>
+<th style="text-align: right;">P(small)</th>
+<th style="text-align: right;">P(large)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">clear</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr>
+<td style="text-align: left;">flagged</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">0.32</td>
+</tr>
+<tr>
+<td style="text-align: left;">inconclusive</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The “inconclusive” report has probability zero, and its column is
+zero: no posterior is invented for it and nothing fails.
+<code>posterior</code> says the same in words:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>(after_flagged<span class="op">=</span><span class="fu">posterior</span>(inverse, <span class="op">:</span>flagged), after_inconclusive<span class="op">=</span><span class="fu">posterior</span>(inverse, <span class="op">:</span>inconclusive))</span></code></pre></div>
+<pre><code>(after_flagged = Rational{Int64}[280//1481, 724//1481, 477//1481], after_inconclusive = nothing)</code></pre>
+<p>Inverting the whole chain is the same as inverting its steps and
+composing the inversions, at every report including the one that never
+comes:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">K</span>(box) <span class="op">=</span> <span class="fu">first</span>(<span class="fu">reward_matrices</span>(<span class="fu">evaluate</span>(box)))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>first_step <span class="op">=</span> <span class="fu">bayesian_inverse</span>(prior, <span class="fu">K</span>(<span class="fu">compose</span>(sampling, assay)))</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>second_step <span class="op">=</span> <span class="fu">bayesian_inverse</span>(first_step.evidence, <span class="fu">K</span>(reporting))</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">inverse_compose</span>(first_step, second_step) <span class="op">==</span> inverse.inverse</span></code></pre></div>
+<pre><code>true</code></pre>
+<h1 id="an-experiment-as-a-spread-of-beliefs">An experiment as a spread
+of beliefs</h1>
+<p>Another way to see why the report is worth less: look at the beliefs
+the manager can end up with. A better experiment spreads them further
+from the prior.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">beliefs_after</span>(<span class="cn">e</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    μ <span class="op">=</span> <span class="fu">posterior_distribution</span>(problem.belief, <span class="cn">e</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [(probability<span class="op">=</span><span class="fu">Float64</span>(p), P_unoccupied<span class="op">=</span><span class="fu">round</span>(<span class="fu">Float64</span>(<span class="cn">π</span>[<span class="fl">1</span>]); digits<span class="op">=</span><span class="fl">3</span>),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>             P_large<span class="op">=</span><span class="fu">round</span>(<span class="fu">Float64</span>(<span class="cn">π</span>[<span class="fl">3</span>]); digits<span class="op">=</span><span class="fl">3</span>)) for (<span class="cn">π</span>, p) <span class="kw">in</span> <span class="fu">zip</span>(μ.outcomes, μ.probabilities)]</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>(after_the_qpcr<span class="op">=</span><span class="fu">beliefs_after</span>(at_qpcr), after_the_report<span class="op">=</span><span class="fu">beliefs_after</span>(at_report))</span></code></pre></div>
+<pre><code>(after_the_qpcr = [(probability = 0.712, P_unoccupied = 0.885, P_large = 0.02), (probability = 0.1317, P_unoccupied = 0.425, P_large = 0.219), (probability = 0.1563, P_unoccupied = 0.09, P_large = 0.365)], after_the_report = [(probability = 0.77785, P_unoccupied = 0.846, P_large = 0.037), (probability = 0.22215, P_unoccupied = 0.189, P_large = 0.322)])</code></pre>
+<p>The beliefs after the report are averages of the beliefs after the
+qPCR, so they lie closer together. Both average back to the prior:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_mean</span>(<span class="fu">posterior_distribution</span>(problem.belief, at_report)) <span class="op">==</span> prior</span></code></pre></div>
+<pre><code>true</code></pre>
+<h1 id="surveys-that-cannot-be-ranked-and-how-far-apart-they-are">Surveys
+that cannot be ranked, and how far apart they are</h1>
+<p>A second laboratory uses a cheaper assay but reports all three qPCR
+classes. Neither report is a garbling of the other, so which is better
+depends on the decision.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cheap_assay <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>assay, bottle, qpcr, [<span class="fl">4</span><span class="op">//</span><span class="fl">5</span> <span class="fl">1</span><span class="op">//</span><span class="fl">5</span>; <span class="fl">3</span><span class="op">//</span><span class="fl">20</span> <span class="fl">2</span><span class="op">//</span><span class="fl">5</span>; <span class="fl">1</span><span class="op">//</span><span class="fl">20</span> <span class="fl">2</span><span class="op">//</span><span class="fl">5</span>])</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>other <span class="op">=</span> <span class="fu">decision_pipeline</span>(base, sampling, cheap_assay)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>at_other <span class="op">=</span> <span class="fu">observation_experiment</span>(<span class="fu">with_observation</span>(other, <span class="op">:</span>manager, <span class="op">:</span>qpcr))</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>(other_from_report<span class="op">=</span><span class="fu">is_garbling</span>(at_other, at_report), report_from_other<span class="op">=</span><span class="fu">is_garbling</span>(at_report, at_other))</span></code></pre></div>
+<pre><code>(other_from_report = false, report_from_other = false)</code></pre>
+<p>The deficiency measures how far one experiment is from being able to
+imitate the other, and bounds how much more the other can be worth in
+this problem:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>(value_of_report<span class="op">=</span><span class="fu">information_value</span>(problem, at_report),</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a> value_of_other<span class="op">=</span><span class="fu">information_value</span>(problem, at_other),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a> other_can_exceed_report_by_at_most<span class="op">=</span><span class="fu">value_gap_bound</span>(problem, at_report, at_other),</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a> report_can_exceed_other_by_at_most<span class="op">=</span><span class="fu">value_gap_bound</span>(problem, at_other, at_report))</span></code></pre></div>
+<pre><code>(value_of_report = 70257//10000, value_of_other = 3379//500, other_can_exceed_report_by_at_most = 6612//12245, report_can_exceed_other_by_at_most = 53447//10750)</code></pre>
+<h1 id="partitions">Partitions</h1>
+<p>Learning which group a state belongs to is a special experiment.
+Finer groups are worth at least as much. Here knowing only whether the
+pond is occupied is already worth as much as knowing the size of the
+population, because the best action is the same for a small and a large
+population.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>occupied_or_not <span class="op">=</span> [<span class="op">:</span>unoccupied, <span class="op">:</span>occupied, <span class="op">:</span>occupied]</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>exactly <span class="op">=</span> [<span class="op">:</span>unoccupied, <span class="op">:</span>small, <span class="op">:</span>large]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>(finer<span class="op">=</span><span class="fu">refines</span>(exactly, occupied_or_not),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a> value_of_knowing_occupancy<span class="op">=</span><span class="fu">evppi</span>(problem, occupied_or_not),</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a> the_same_as_an_experiment<span class="op">=</span><span class="fu">evsi</span>(problem, <span class="fu">partition_experiment</span>(occupied_or_not)),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a> value_of_knowing_exactly<span class="op">=</span><span class="fu">evppi</span>(problem, exactly))</span></code></pre></div>
+<pre><code>(finer = true, value_of_knowing_occupancy = 28//5, the_same_as_an_experiment = 28//5, value_of_knowing_exactly = 28//5)</code></pre>
+<h1 id="summary">Summary</h1>
+<p>A chain of observation processes is boxes in a row. The value of what
+is read at the end of the chain is at most the value of what is read
+earlier, for every decision, and the diagram says so before any number
+is computed. The package adds no new measure of information: the values
+are those of <code>DecisionAnalysis</code>, read off the diagram.</p>
+</body>
+</html>

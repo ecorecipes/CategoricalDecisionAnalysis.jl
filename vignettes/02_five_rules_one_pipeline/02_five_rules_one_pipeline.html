@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Simon Frost" />
+  <title>Five rules from one pipeline</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+html { font-size: 17px; }
+body {
+font-family: "STIX Two Text", "Source Serif 4", Georgia, "Times New Roman", serif;
+line-height: 1.5; color: #1a1a1a; background: #fdfdfd;
+max-width: 50em; margin: 0 auto; padding: 2em 1.5em 4em;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+h1.title { margin-top: 0.5em; }
+p.author { color: #555; }
+a { color: #1f5fa8; }
+code, pre {
+font-family: "JuliaMono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+font-size: 0.86em;
+}
+pre { background: #f4f4f2; padding: 0.8em 1em; overflow-x: auto; border-radius: 4px; }
+code { background: #f4f4f2; padding: 0.05em 0.25em; border-radius: 3px; }
+pre code { background: none; padding: 0; font-size: 1em; }
+table { border-collapse: collapse; margin: 1em 0; font-size: 0.95em; display: block; overflow-x: auto; }
+th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; }
+thead th { border-bottom: 2px solid #888; }
+img { max-width: 100%; height: auto; }
+nav#TOC { background: #f4f4f2; padding: 0.6em 1em; border-radius: 4px; }
+nav#TOC ul { margin: 0.2em 0; padding-left: 1.2em; }
+@media (prefers-color-scheme: dark) {
+body { color: #e6e6e6; background: #1c1c1e; }
+a { color: #8ab4f8; }
+pre, code, nav#TOC { background: #2a2a2d; }
+th, td { border-bottom-color: #444; }
+img { background: #fff; }
+}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Five rules from one pipeline</h1>
+<p class="author">Simon Frost</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#motivation" id="toc-motivation">Motivation</a></li>
+<li><a href="#kinds-of-uncertainty" id="toc-kinds-of-uncertainty">Kinds
+of uncertainty</a></li>
+<li><a href="#five-rules-by-swapping-two-boxes" id="toc-five-rules-by-swapping-two-boxes">Five rules by swapping two
+boxes</a></li>
+<li><a href="#a-sixth-rule-needs-a-different-belief-box" id="toc-a-sixth-rule-needs-a-different-belief-box">A sixth rule needs a
+different belief box</a>
+<ul>
+<li><a href="#beliefs-and-rules-must-match" id="toc-beliefs-and-rules-must-match">Beliefs and rules must
+match</a></li>
+</ul></li>
+<li><a href="#which-summaries-can-be-taken-in-stages" id="toc-which-summaries-can-be-taken-in-stages">Which summaries can be
+taken in stages</a></li>
+<li><a href="#the-value-of-information-is-a-gap-between-two-orders-of-doing-things" id="toc-the-value-of-information-is-a-gap-between-two-orders-of-doing-things">The
+value of information is a gap between two orders of doing
+things</a></li>
+<li><a href="#regret-when-states-are-merged" id="toc-regret-when-states-are-merged">Regret when states are
+merged</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</nav>
+<h1 id="motivation">Motivation</h1>
+<p>Maximising the expected count is one way to choose. A cautious
+manager looks at the worst case, a manager who fears hindsight looks at
+regret, and a manager who does not trust a single probability works with
+a set of them. In a spreadsheet each of these is a different
+calculation. Here they are one calculation with two parts swapped:</p>
+<ul>
+<li>the <strong>algebra box</strong>: how an uncertain count is
+summarised as one number;</li>
+<li>the <strong>selection box</strong>: how an action is picked from the
+summaries.</li>
+</ul>
+<p>The diagram of the problem, built in the <a href="../01_first_pipeline/01_first_pipeline.html">first vignette</a>,
+is not touched.</p>
+<p><strong>All numbers are illustrative</strong>; counts are of water
+voles, and every result is compared with no intervention.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CategoricalDecisionAnalysis</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="fu">joinpath</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;_common.jl&quot;</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mink <span class="op">=</span> <span class="op">:</span>mink_pressure <span class="op">=&gt;</span> [<span class="op">:</span>low, <span class="op">:</span>high]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>action <span class="op">=</span> <span class="op">:</span>action <span class="op">=&gt;</span> [<span class="op">:</span>no_intervention, <span class="op">:</span>trap_mink, <span class="op">:</span>restore_banks]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>colony <span class="op">=</span> <span class="op">:</span>colony <span class="op">=&gt;</span> [<span class="op">:</span>lost, <span class="op">:</span>reduced, <span class="op">:</span>thriving]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> <span class="fu">zeros</span>(<span class="dt">Rational</span>{<span class="dt">Int</span>}, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">2</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">1</span>, <span class="fl">1</span>] <span class="op">=</span> [<span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">3</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">6</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">1</span>, <span class="fl">2</span>] <span class="op">=</span> [<span class="fl">7</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">2</span>, <span class="fl">1</span>] <span class="op">=</span> [<span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">7</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">2</span>, <span class="fl">2</span>] <span class="op">=</span> [<span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">4</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">4</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">3</span>, <span class="fl">1</span>] <span class="op">=</span> [<span class="fl">0</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">8</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">3</span>, <span class="fl">2</span>] <span class="op">=</span> [<span class="fl">5</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">3</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>]</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>reach <span class="op">=</span> <span class="fu">decision_pipeline</span>(<span class="fu">belief_box</span>(<span class="op">:</span>what_we_believe, mink, [<span class="fl">3</span> <span class="op">//</span> <span class="fl">5</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">5</span>]),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">policy_box</span>(<span class="op">:</span>manager, (), action),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">consequence_box</span>(<span class="op">:</span>colony_model, (action, mink), colony, model),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">utility_box</span>(<span class="op">:</span>voles_next_spring, colony, [<span class="fl">0</span>, <span class="fl">40</span>, <span class="fl">120</span>]))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>problem <span class="op">=</span> <span class="fu">decision_problem</span>(reach; baseline<span class="op">=:</span>no_intervention)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>problem.payoff</span></code></pre></div>
+<p><strong>PayoffTable{Rational{Int64}}: 3 actions × 2
+states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>low</code></th>
+<th style="text-align: right;"><code>high</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>no_intervention</code></td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trap_mink</code></td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>restore_banks</code></td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;">36</td>
+</tr>
+</tbody>
+</table>
+<h1 id="kinds-of-uncertainty">Kinds of uncertainty</h1>
+<p>The belief box above holds a probability for each state. That is one
+kind of uncertain value. The package has four, and calls each a
+<em>monad</em>, which here means no more than “a kind of uncertain
+value, with a rule for chaining two uncertain steps”.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">kind</th>
+<th style="text-align: left;">an uncertain state is</th>
+<th style="text-align: left;">in the package</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">none</td>
+<td style="text-align: left;">one state</td>
+<td style="text-align: left;"><code>IdentityMonad</code>, a
+<code>PointBelief</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">probabilities</td>
+<td style="text-align: left;">a distribution over states</td>
+<td style="text-align: left;"><code>DistributionMonad</code>, a
+<code>FiniteBelief</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">possibilities</td>
+<td style="text-align: left;">a set of states that could hold</td>
+<td style="text-align: left;"><code>PowersetMonad</code>, a
+<code>ScenarioSet</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">candidate probabilities</td>
+<td style="text-align: left;">a set of distributions</td>
+<td style="text-align: left;"><code>CredalMonad</code>, a
+<code>CredalSet</code></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">belief_monad</span>(problem.belief)</span></code></pre></div>
+<pre><code>DistributionMonad()</code></pre>
+<p>Each kind has its own ways of turning an uncertain count into one
+number. The package calls such a map a <em>structure map</em>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>uncertain_count <span class="op">=</span> <span class="fu">FiniteDistribution</span>([<span class="fl">84</span>, <span class="fl">20</span>], [<span class="fl">3</span> <span class="op">//</span> <span class="fl">5</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">5</span>])   <span class="co"># no intervention</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>possible_counts <span class="op">=</span> <span class="fu">FiniteSubset</span>([<span class="fl">84</span>, <span class="fl">20</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>(expectation<span class="op">=</span><span class="fu">ExpectationAlgebra</span>()(uncertain_count), worst<span class="op">=</span><span class="fu">InfimumAlgebra</span>()(possible_counts),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a> best<span class="op">=</span><span class="fu">SupremumAlgebra</span>()(possible_counts))</span></code></pre></div>
+<pre><code>(expectation = 292//5, worst = 20, best = 84)</code></pre>
+<h1 id="five-rules-by-swapping-two-boxes">Five rules by swapping two
+boxes</h1>
+<p><code>rule_selection</code> assembles a rule from its two boxes. The
+first rule is the expected count, maximised.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>expected <span class="op">=</span> <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">ExpectationAlgebra</span>(), name<span class="op">=:</span>expected_count)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(expected, reach)</span></code></pre></div>
+<pre><code>1-element Vector{Symbol}:
+ :trap_mink</code></pre>
+<p>The others change the algebra box, the selection box, or both. The
+diagram <code>reach</code> is the same object throughout.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>rules <span class="op">=</span> [<span class="st">&quot;expected count&quot;</span> <span class="op">=&gt;</span> <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">ExpectationAlgebra</span>()),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;worst case (maximin)&quot;</span> <span class="op">=&gt;</span> <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">InfimumAlgebra</span>()),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;best case (maximax)&quot;</span> <span class="op">=&gt;</span> <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">SupremumAlgebra</span>()),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;minimax regret&quot;</span> <span class="op">=&gt;</span> <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">InfimumAlgebra</span>(), transform<span class="op">=:</span>regret),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;good enough: at least 75 voles expected&quot;</span> <span class="op">=&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">ExpectationAlgebra</span>(), selector<span class="op">=</span>(<span class="op">:</span>threshold, <span class="fl">75</span>))]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>actions <span class="op">=</span> <span class="fu">feasible_actions</span>(problem)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>(<span class="fu">vcat</span>(<span class="st">&quot;rule&quot;</span>, <span class="fu">String</span>.(actions), <span class="st">&quot;chosen&quot;</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>         [<span class="fu">vcat</span>(name, <span class="fu">rule_scores</span>(rule, problem), [<span class="fu">select</span>(rule, reach)])</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>          for (name, rule) <span class="kw">in</span> rules])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">rule</th>
+<th style="text-align: right;">no_intervention</th>
+<th style="text-align: right;">trap_mink</th>
+<th style="text-align: right;">restore_banks</th>
+<th style="text-align: right;">chosen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">expected count</td>
+<td style="text-align: right;">58.4</td>
+<td style="text-align: right;">80.8</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;"><code>trap_mink</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">worst case (maximin)</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;"><code>trap_mink</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">best case (maximax)</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;"><code>restore_banks</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">minimax regret</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;"><code>trap_mink</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">good enough: at least 75 voles
+expected</td>
+<td style="text-align: right;">58.4</td>
+<td style="text-align: right;">80.8</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;"><code>trap_mink</code>,
+<code>restore_banks</code></td>
+</tr>
+</tbody>
+</table>
+<p>The scores of minimax regret are losses (lower is better); the others
+are counts. With the regret transform the worst case is read on the side
+of losses: the worst case of a regret is the largest regret.</p>
+<p>Each row is the corresponding rule of <code>DecisionAnalysis</code>,
+and gives the same answer:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>core <span class="op">=</span> [<span class="fu">MaxExpectedUtility</span>(), <span class="fu">Maximin</span>(), <span class="fu">Maximax</span>(), <span class="fu">MinimaxRegret</span>(), <span class="fu">Satisfice</span>(<span class="fl">75</span>)]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">select</span>(rule, reach) <span class="op">==</span> <span class="fu">decide</span>(problem, c).chosen <span class="cf">for</span> ((_, rule), c) <span class="kw">in</span> <span class="fu">zip</span>(rules, core))</span></code></pre></div>
+<pre><code>true</code></pre>
+<p>In every row the comparison with doing nothing is the same table of
+gains; the rules differ in how they read it.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gain_over_baseline</span>(problem)</span></code></pre></div>
+<p><strong>PayoffTable{Rational{Int64}}: 3 actions × 2
+states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>low</code></th>
+<th style="text-align: right;"><code>high</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>no_intervention</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trap_mink</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>restore_banks</code></td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">16</td>
+</tr>
+</tbody>
+</table>
+<h1 id="a-sixth-rule-needs-a-different-belief-box">A sixth rule needs a
+different belief box</h1>
+<p>The fifth kind of rule works with a set of candidate probabilities.
+That is a change to the belief box, and the diagram says so:
+<code>replace_box</code> swaps the belief.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>candidates <span class="op">=</span> <span class="fu">CredalSet</span>([<span class="op">:</span>low, <span class="op">:</span>high], [[<span class="fl">3</span> <span class="op">//</span> <span class="fl">5</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">5</span>], [<span class="fl">4</span> <span class="op">//</span> <span class="fl">5</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">5</span>], [<span class="fl">3</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">7</span> <span class="op">//</span> <span class="fl">10</span>]])</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ambiguous <span class="op">=</span> <span class="fu">replace_box</span>(reach, <span class="op">:</span>what_we_believe, candidates)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cautious <span class="op">=</span> <span class="fu">rule_selection</span>(; algebra<span class="op">=</span><span class="fu">LowerExpectationAlgebra</span>(), name<span class="op">=:</span>gamma_maximin)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>(chosen<span class="op">=</span><span class="fu">select</span>(cautious, ambiguous), lower_expected_counts<span class="op">=</span><span class="fu">rule_scores</span>(cautious, <span class="fu">decision_problem</span>(ambiguous)),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a> same_as_core<span class="op">=</span><span class="fu">select</span>(cautious, ambiguous) <span class="op">==</span> <span class="fu">decide</span>(ambiguous, <span class="fu">GammaMaximin</span>()).chosen)</span></code></pre></div>
+<pre><code>(chosen = [:trap_mink], lower_expected_counts = Rational{Int64}[196//5, 362//5, 282//5], same_as_core = true)</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">expected_gain_over_baseline</span>(<span class="fu">decision_problem</span>(ambiguous; baseline<span class="op">=:</span>no_intervention))</span></code></pre></div>
+<pre><code>(lower = Rational{Int64}[0, 76//5, 86//5], upper = Rational{Int64}[0, 166//5, 96//5])</code></pre>
+<p>Under a set of candidate probabilities the gain over no intervention
+is a range, one pair of numbers for each action.</p>
+<h2 id="beliefs-and-rules-must-match">Beliefs and rules must match</h2>
+<p>A rule reads the belief in its own kind of uncertainty. Where the
+belief is of another kind, there has to be a way of carrying one to the
+other. Some exist:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>[(from<span class="op">=</span><span class="fu">nameof</span>(<span class="fu">typeof</span>(a)), to<span class="op">=</span><span class="fu">nameof</span>(<span class="fu">typeof</span>(b)), exists<span class="op">=</span><span class="fu">has_monad_morphism</span>(a, b))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a> for (a, b) <span class="kw">in</span> ((<span class="fu">DistributionMonad</span>(), <span class="fu">CredalMonad</span>()), (<span class="fu">PowersetMonad</span>(), <span class="fu">CredalMonad</span>()),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                (<span class="fu">DistributionMonad</span>(), <span class="fu">PowersetMonad</span>()), (<span class="fu">CredalMonad</span>(), <span class="fu">DistributionMonad</span>()),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                (<span class="fu">PowersetMonad</span>(), <span class="fu">DistributionMonad</span>()))]</span></code></pre></div>
+<pre><code>5-element Vector{@NamedTuple{from::Symbol, to::Symbol, exists::Bool}}:
+ (from = :DistributionMonad, to = :CredalMonad, exists = 1)
+ (from = :PowersetMonad, to = :CredalMonad, exists = 1)
+ (from = :DistributionMonad, to = :PowersetMonad, exists = 1)
+ (from = :CredalMonad, to = :DistributionMonad, exists = 0)
+ (from = :PowersetMonad, to = :DistributionMonad, exists = 0)</code></pre>
+<p>A single distribution is a set with one member; a set of possible
+states is every distribution on them. Nothing turns a set back into one
+distribution, so the expected count of an ambiguous belief is refused
+and not guessed:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(expected, ambiguous)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">catch</span> err</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sprint</span>(showerror, err)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div>
+<pre><code>&quot;MonadMismatchError: `belief_value` expected CategoricalDecisionAnalysis.CredalMonad() and got CategoricalDecisionAnalysis.DistributionMonad(): there is no monad morphism from the belief&#39;s monad to the one asked for&quot;</code></pre>
+<h1 id="which-summaries-can-be-taken-in-stages">Which summaries can be
+taken in stages</h1>
+<p>Some summaries give the same number whether an uncertain count is
+summarised in one go or in two stages (first within each branch, then
+across branches). The expectation does: the mean of the means is the
+mean. So do the worst and the best case. Others do not. The package
+records which, because it decides whether a rule can be used in a
+problem with several stages (<a href="../05_selection_functions_and_backward_induction/05_selection_functions_and_backward_induction.html">a
+later vignette</a>).</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>branch1 <span class="op">=</span> <span class="fu">FiniteDistribution</span>([<span class="fl">0</span>, <span class="fl">10</span>], [<span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>])</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>branch2 <span class="op">=</span> <span class="fu">FiniteDistribution</span>([<span class="fl">4</span>], [<span class="fl">1</span>])</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>two_stage <span class="op">=</span> <span class="fu">FiniteDistribution</span>([branch1, branch2], [<span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>])</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;summary&quot;</span>, <span class="st">&quot;in one go minus in two stages&quot;</span>, <span class="st">&quot;the same in stages&quot;</span>],</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>         [[<span class="fu">String</span>(<span class="fu">nameof</span>(<span class="fu">typeof</span>(s))), <span class="fu">algebra_multiplication_defect</span>(s, two_stage), <span class="fu">is_algebra</span>(s)]</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>          for s <span class="kw">in</span> (<span class="fu">ExpectationAlgebra</span>(), <span class="fu">CVaRMap</span>(<span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>), <span class="fu">QuantileMap</span>(<span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>))])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">summary</th>
+<th style="text-align: right;">in one go minus in two stages</th>
+<th style="text-align: right;">the same in stages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">ExpectationAlgebra</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">CVaRMap</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">QuantileMap</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">-</td>
+</tr>
+</tbody>
+</table>
+<p><code>CVaRMap(1 // 2)</code> is the mean of the worse half of the
+outcomes. Taken in two stages it gives a different number, which is why
+it cannot be optimised stage by stage.</p>
+<h1 id="the-value-of-information-is-a-gap-between-two-orders-of-doing-things">The
+value of information is a gap between two orders of doing things</h1>
+<p>“Take the best action in each state, then average” and “average, then
+take the best action” differ, and the first is never smaller. The
+difference is the expected value of perfect information.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>(interchange_gap<span class="op">=</span><span class="fu">interchange_gap</span>(problem), evpi<span class="op">=</span><span class="fu">evpi</span>(problem))</span></code></pre></div>
+<pre><code>(interchange_gap = 36//5, evpi = 36//5)</code></pre>
+<p>The same gap with the worst case in place of the average is the
+difference between choosing after and before nature moves:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>scenario <span class="op">=</span> <span class="fu">replace_box</span>(reach, <span class="op">:</span>what_we_believe, <span class="fu">ScenarioSet</span>([<span class="op">:</span>low, <span class="op">:</span>high]))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">interchange_gap</span>(<span class="fu">decision_problem</span>(scenario))</span></code></pre></div>
+<pre><code>0//1</code></pre>
+<h1 id="regret-when-states-are-merged">Regret when states are
+merged</h1>
+<p>Regret compares each action with the best action for the state. If
+two states are merged (the manager will never tell them apart), the
+regret of the merged problem is smaller than the merged regret, by the
+same amount for every action. The amount is the value of perfect
+information that the merging gives up.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>three <span class="op">=</span> <span class="fu">DecisionProblem</span>(<span class="fu">PayoffTable</span>([<span class="op">:</span>no_intervention, <span class="op">:</span>trap_mink, <span class="op">:</span>restore_banks],</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                                    [<span class="op">:</span>low, <span class="op">:</span>medium, <span class="op">:</span>high], [<span class="fl">84</span> <span class="fl">50</span> <span class="fl">20</span>; <span class="fl">92</span> <span class="fl">80</span> <span class="fl">64</span>; <span class="fl">104</span> <span class="fl">70</span> <span class="fl">36</span>]),</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                        [<span class="fl">1</span> <span class="op">//</span> <span class="fl">2</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">4</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">4</span>]; baseline<span class="op">=:</span>no_intervention)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>merged <span class="op">=</span> <span class="fu">regret_coarsening</span>(three, [<span class="op">:</span>low, <span class="op">:</span>not_low, <span class="op">:</span>not_low])</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;cell&quot;</span>, <span class="st">&quot;probability&quot;</span>, <span class="st">&quot;gap (voles)&quot;</span>],</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>         [[<span class="fu">String</span>(c), merged.mass[i], merged.gap[i]] for (i, c) <span class="kw">in</span> <span class="fu">enumerate</span>(merged.cells)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">cell</th>
+<th style="text-align: right;">probability</th>
+<th style="text-align: right;">gap (voles)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">low</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">not_low</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb26"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>(sum_of_gaps<span class="op">=</span><span class="fu">sum</span>(merged.gap), evpi_minus_evppi<span class="op">=</span><span class="fu">evpi</span>(three) <span class="op">-</span> <span class="fu">evppi</span>(three, [<span class="op">:</span>low, <span class="op">:</span>not_low, <span class="op">:</span>not_low]),</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a> nothing_lost<span class="op">=</span><span class="fu">coarsening_is_lossless</span>(three, [<span class="op">:</span>low, <span class="op">:</span>not_low, <span class="op">:</span>not_low]))</span></code></pre></div>
+<pre><code>(sum_of_gaps = 0//1, evpi_minus_evppi = 0//1, nothing_lost = true)</code></pre>
+<p>The gap is zero in a cell exactly when one action is best at every
+state of the cell; then merging its states loses nothing for this
+decision.</p>
+<h1 id="summary">Summary</h1>
+<p>One diagram, six rules. Each rule is a pair (algebra box, selection
+box), and a rule that needs another kind of belief says so. The package
+reproduces the rules of <code>DecisionAnalysis</code> and does not add
+new ones; what it adds is that the rule is a piece of data that can be
+swapped, inspected and classified.</p>
+</body>
+</html>

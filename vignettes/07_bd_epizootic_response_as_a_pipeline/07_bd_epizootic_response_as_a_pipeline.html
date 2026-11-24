@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Simon Frost" />
+  <title>Bd epizootic response as a pipeline</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+html { font-size: 17px; }
+body {
+font-family: "STIX Two Text", "Source Serif 4", Georgia, "Times New Roman", serif;
+line-height: 1.5; color: #1a1a1a; background: #fdfdfd;
+max-width: 50em; margin: 0 auto; padding: 2em 1.5em 4em;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+h1.title { margin-top: 0.5em; }
+p.author { color: #555; }
+a { color: #1f5fa8; }
+code, pre {
+font-family: "JuliaMono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+font-size: 0.86em;
+}
+pre { background: #f4f4f2; padding: 0.8em 1em; overflow-x: auto; border-radius: 4px; }
+code { background: #f4f4f2; padding: 0.05em 0.25em; border-radius: 3px; }
+pre code { background: none; padding: 0; font-size: 1em; }
+table { border-collapse: collapse; margin: 1em 0; font-size: 0.95em; display: block; overflow-x: auto; }
+th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; }
+thead th { border-bottom: 2px solid #888; }
+img { max-width: 100%; height: auto; }
+nav#TOC { background: #f4f4f2; padding: 0.6em 1em; border-radius: 4px; }
+nav#TOC ul { margin: 0.2em 0; padding-left: 1.2em; }
+@media (prefers-color-scheme: dark) {
+body { color: #e6e6e6; background: #1c1c1e; }
+a { color: #8ab4f8; }
+pre, code, nav#TOC { background: #2a2a2d; }
+th, td { border-bottom-color: #444; }
+img { background: #fff; }
+}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Bd epizootic response as a pipeline</h1>
+<p class="author">Simon Frost</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#motivation" id="toc-motivation">Motivation</a>
+<ul>
+<li><a href="#what-this-is-and-is-not" id="toc-what-this-is-and-is-not">What this is and is not</a></li>
+</ul></li>
+<li><a href="#the-cached-table-by-group" id="toc-the-cached-table-by-group">The cached table, by group</a></li>
+<li><a href="#the-same-analysis-as-a-pipeline" id="toc-the-same-analysis-as-a-pipeline">The same analysis as a
+pipeline</a></li>
+<li><a href="#what-the-pipeline-adds" id="toc-what-the-pipeline-adds">What the pipeline adds</a>
+<ul>
+<li><a href="#1-a-survey-as-a-chain-swabs-assay-report" id="toc-1-a-survey-as-a-chain-swabs-assay-report">1. A survey as a
+chain: swabs, assay, report</a></li>
+<li><a href="#2-a-limit-on-handling" id="toc-2-a-limit-on-handling">2. A
+limit on handling</a></li>
+<li><a href="#3-what-an-error-in-the-weights-can-cost" id="toc-3-what-an-error-in-the-weights-can-cost">3. What an error in the
+weights can cost</a></li>
+</ul></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+</ul>
+</nav>
+<h1 id="motivation">Motivation</h1>
+<p>The last vignette of <code>DecisionAnalysis.jl</code> (its number 14)
+analyses the response to an outbreak of <em>Batrachochytrium
+dendrobatidis</em> (Bd), the fungus that causes chytridiomycosis, in a
+frog pond, from a cached table of model runs. This vignette takes the
+same table, writes the analysis as a pipeline, checks that the pipeline
+gives the same numbers, and then does three things that are awkward
+without the diagram: a survey as a chain of observation processes, a
+limit on how many frogs the field team can handle, and a statement of
+what an error in the weights can cost.</p>
+<h2 id="what-this-is-and-is-not">What this is and is not</h2>
+<ul>
+<li>The <strong>model</strong> is the stochastic individual-based model
+of Drawert, Griesemer, Petzold and Briggs (2017, <em>J. R. Soc.
+Interface</em> 14:20170480, <a href="https://doi.org/10.1098/rsif.2017.0480">doi:10.1098/rsif.2017.0480</a>),
+as implemented in <code>Chytridiomycosis.jl</code>. The parameter points
+are the authors’.</li>
+<li>The <strong>runs</strong> are not the authors’:
+<code>Chytridiomycosis.jl</code> ran the model at 100 of the authors’
+2,132 parameter points under ten actions, 30 times each, and stores the
+result. Numbers read from that table are labelled <em>from the cached
+table</em>.</li>
+<li><strong>Everything else is illustrative</strong>: the weights on the
+groups, the utility, every number that describes the survey, and the
+handling limit. <strong>Nothing here is a published result</strong>, and
+none of it is advice for a real pond.</li>
+</ul>
+<p>The currency is frogs. No cost in money appears: none is published
+for this system.</p>
+<h1 id="the-cached-table-by-group">The cached table, by group</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CategoricalDecisionAnalysis</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Chytridiomycosis</span>: Chytridiomycosis, load_drawert_decisions</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="fu">joinpath</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;_common.jl&quot;</span>))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">read_draws</span>(path)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> <span class="fu">readlines</span>(path)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    names <span class="op">=</span> <span class="fu">Tuple</span>(<span class="fu">Symbol</span>.(<span class="fu">split</span>(lines[<span class="fl">1</span>], <span class="ch">&#39;,&#39;</span>)))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">map</span>(lines[<span class="fl">2</span><span class="op">:</span><span class="kw">end</span>]) <span class="cf">do</span> line</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        v <span class="op">=</span> <span class="fu">split</span>(line, <span class="ch">&#39;,&#39;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="fu">NamedTuple</span><span class="dt">{names}</span>((<span class="fu">parse</span>(<span class="dt">Int</span>, v[<span class="fl">1</span>]), <span class="fu">String</span>(v[<span class="fl">2</span>]), <span class="fu">parse</span>.(<span class="dt">Float64</span>, v[<span class="fl">3</span><span class="op">:</span><span class="kw">end</span>])<span class="op">...</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>runs <span class="op">=</span> <span class="fu">load_drawert_decisions</span>()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>draws <span class="op">=</span> <span class="fu">read_draws</span>(<span class="fu">joinpath</span>(<span class="fu">pkgdir</span>(Chytridiomycosis), <span class="st">&quot;data&quot;</span>, <span class="st">&quot;drawert2017&quot;</span>, <span class="st">&quot;decision_draws.csv&quot;</span>))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> <span class="fu">OutcomeTable</span>(runs; draw<span class="op">=:</span>draw_id, action<span class="op">=:</span>action, replicate<span class="op">=:</span>replicate,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                     outcomes<span class="op">=</span>[<span class="op">:</span>survivors, <span class="op">:</span>handled], status<span class="op">=:</span>status, parameters<span class="op">=</span>draws,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                     key<span class="op">=:</span>draw_id, weights<span class="op">=:</span>weight)</span></code></pre></div>
+<pre><code>OutcomeTable(100 draws × 10 actions × 30 replicates; outcomes survivors, handled; 30000 runs ok, 0 failed, 0 absent)</code></pre>
+<p>The actions are no intervention (<code>none</code>, <strong>the
+baseline</strong>) and one pulse at 75% coverage of one of three kinds
+(treat the frogs with an antifungal, cull frogs, clean the water) on day
+14, 28 or 56 after Bd arrives. The authors sort their parameter points
+into five groups, A to E, by what the model does there without
+intervention (A: the frogs always go extinct; D: Bd usually dies out; B,
+C and E in between or variable).</p>
+<p>The core analysis, in <code>DecisionAnalysis</code> alone: the
+utility is the number of frogs alive at the end of a run, and
+<code>conditional_problem</code> collapses the draws onto the group.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>core <span class="op">=</span> <span class="fu">DecisionProblem</span>(table, <span class="fu">IndividualsUtility</span>(<span class="op">:</span>survivors); baseline<span class="op">=:</span>none)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>by_group <span class="op">=</span> <span class="fu">conditional_problem</span>(core, <span class="op">:</span>group)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>by_group.payoff</span></code></pre></div>
+<p><strong>PayoffTable{Float64}: 10 actions × 5 states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>A</code></th>
+<th style="text-align: right;"><code>B</code></th>
+<th style="text-align: right;"><code>C</code></th>
+<th style="text-align: right;"><code>D</code></th>
+<th style="text-align: right;"><code>E</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>none</code></td>
+<td style="text-align: right;">0.000775194</td>
+<td style="text-align: right;">1.28611</td>
+<td style="text-align: right;">22.6686</td>
+<td style="text-align: right;">77.5957</td>
+<td style="text-align: right;">24.76</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d14_f75</code></td>
+<td style="text-align: right;">3.57752</td>
+<td style="text-align: right;">24.7583</td>
+<td style="text-align: right;">34.7314</td>
+<td style="text-align: right;">78.471</td>
+<td style="text-align: right;">25.06</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d28_f75</code></td>
+<td style="text-align: right;">1.81628</td>
+<td style="text-align: right;">18.5417</td>
+<td style="text-align: right;">36.4275</td>
+<td style="text-align: right;">78.0087</td>
+<td style="text-align: right;">25.06</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d56_f75</code></td>
+<td style="text-align: right;">0.124806</td>
+<td style="text-align: right;">7.66944</td>
+<td style="text-align: right;">30.7235</td>
+<td style="text-align: right;">77.8609</td>
+<td style="text-align: right;">25.0733</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d14_f75</code></td>
+<td style="text-align: right;">2.56512</td>
+<td style="text-align: right;">14.65</td>
+<td style="text-align: right;">12.3333</td>
+<td style="text-align: right;">19.5986</td>
+<td style="text-align: right;">19.9667</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d28_f75</code></td>
+<td style="text-align: right;">1.41938</td>
+<td style="text-align: right;">12.2167</td>
+<td style="text-align: right;">14.2549</td>
+<td style="text-align: right;">36.6203</td>
+<td style="text-align: right;">19.3933</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d56_f75</code></td>
+<td style="text-align: right;">0.643411</td>
+<td style="text-align: right;">8.57222</td>
+<td style="text-align: right;">15.7588</td>
+<td style="text-align: right;">58.8319</td>
+<td style="text-align: right;">19.8667</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d14_f75</code></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">1.44444</td>
+<td style="text-align: right;">22.0745</td>
+<td style="text-align: right;">77.6609</td>
+<td style="text-align: right;">25.04</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d28_f75</code></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.863889</td>
+<td style="text-align: right;">22.8196</td>
+<td style="text-align: right;">77.6246</td>
+<td style="text-align: right;">24.8667</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d56_f75</code></td>
+<td style="text-align: right;">0.000775194</td>
+<td style="text-align: right;">1.31667</td>
+<td style="text-align: right;">23.7392</td>
+<td style="text-align: right;">77.6275</td>
+<td style="text-align: right;">25.0</td>
+</tr>
+</tbody>
+</table>
+<p>Every entry is <em>from the cached table</em>: the mean number of
+surviving frogs for an action in a group. The weights of the groups are
+the design weights of the sample, used as a belief. That is an
+<strong>assumption</strong> (every design point equally likely to be the
+pond at hand), not knowledge.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;group&quot;</span>, <span class="st">&quot;weight&quot;</span>], [[<span class="fu">String</span>(g), w] for (g, w) <span class="kw">in</span> <span class="fu">zip</span>(<span class="fu">state_labels</span>(by_group),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                                                             <span class="fu">probabilities</span>(by_group.belief))]; digits<span class="op">=</span><span class="fl">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">group</th>
+<th style="text-align: right;">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">0.65</td>
+</tr>
+<tr>
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">0.051</td>
+</tr>
+<tr>
+<td style="text-align: left;">C</td>
+<td style="text-align: right;">0.104</td>
+</tr>
+<tr>
+<td style="text-align: left;">D</td>
+<td style="text-align: right;">0.186</td>
+</tr>
+<tr>
+<td style="text-align: left;">E</td>
+<td style="text-align: right;">0.009</td>
+</tr>
+</tbody>
+</table>
+<h1 id="the-same-analysis-as-a-pipeline">The same analysis as a
+pipeline</h1>
+<p>Three boxes: what is believed about the group, the decision, and the
+frogs counted.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>group <span class="op">=</span> <span class="op">:</span>group <span class="op">=&gt;</span> <span class="fu">state_labels</span>(by_group)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>action <span class="op">=</span> <span class="op">:</span>action <span class="op">=&gt;</span> <span class="fu">action_labels</span>(by_group)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pond <span class="op">=</span> <span class="fu">decision_pipeline</span>(<span class="fu">belief_box</span>(<span class="op">:</span>design_weights, group, by_group.belief),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">policy_box</span>(<span class="op">:</span>manager, (), action),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">utility_box</span>(<span class="op">:</span>survivors, (action, group), by_group.payoff.Q))</span></code></pre></div>
+<pre><code>DecisionPipeline: 3 boxes, inputs Symbol[], outputs Symbol[]
+  belief      design_weights : I → group
+  policy      manager : I → action   (open)
+  utility     survivors : action ⊗ group → ℝ</code></pre>
+<p>The pipeline reproduces the numbers of the core analysis.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>from_pipeline <span class="op">=</span> <span class="fu">decide</span>(pond, <span class="fu">MaxExpectedUtility</span>())</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>from_core <span class="op">=</span> <span class="fu">decide</span>(core, <span class="fu">MaxExpectedUtility</span>())          <span class="co"># over the 100 draws, not the groups</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>gains <span class="op">=</span> <span class="fu">expected_gain_over_baseline</span>(<span class="fu">decision_problem</span>(pond; baseline<span class="op">=:</span>none))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;action&quot;</span>, <span class="st">&quot;expected survivors: pipeline&quot;</span>, <span class="st">&quot;core&quot;</span>, <span class="st">&quot;gain over no intervention&quot;</span>],</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>         [[a, from_pipeline.scores[i], from_core.scores[i], gains[i]]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          for (i, a) <span class="kw">in</span> <span class="fu">enumerate</span>(action[<span class="fl">2</span>])])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;">expected survivors: pipeline</th>
+<th style="text-align: right;">core</th>
+<th style="text-align: right;">gain over no intervention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>none</code></td>
+<td style="text-align: right;">17.06</td>
+<td style="text-align: right;">17.06</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d14_f75</code></td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">4.94</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d28_f75</code></td>
+<td style="text-align: right;">20.63</td>
+<td style="text-align: right;">20.63</td>
+<td style="text-align: right;">3.57</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d56_f75</code></td>
+<td style="text-align: right;">18.36</td>
+<td style="text-align: right;">18.36</td>
+<td style="text-align: right;">1.29</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d14_f75</code></td>
+<td style="text-align: right;">7.52</td>
+<td style="text-align: right;">7.52</td>
+<td style="text-align: right;">-9.54</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d28_f75</code></td>
+<td style="text-align: right;">10.01</td>
+<td style="text-align: right;">10.01</td>
+<td style="text-align: right;">-7.05</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d56_f75</code></td>
+<td style="text-align: right;">13.6</td>
+<td style="text-align: right;">13.6</td>
+<td style="text-align: right;">-3.46</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d14_f75</code></td>
+<td style="text-align: right;">17.02</td>
+<td style="text-align: right;">17.02</td>
+<td style="text-align: right;">-0.04</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d28_f75</code></td>
+<td style="text-align: right;">17.06</td>
+<td style="text-align: right;">17.06</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d56_f75</code></td>
+<td style="text-align: right;">17.18</td>
+<td style="text-align: right;">17.18</td>
+<td style="text-align: right;">0.12</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb8"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(same_scores<span class="op">=</span>from_pipeline.scores <span class="op">≈</span> from_core.scores,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> same_choice<span class="op">=</span>from_pipeline.chosen <span class="op">==</span> from_core.chosen <span class="op">==</span> <span class="fu">decide</span>(by_group, <span class="fu">MaxExpectedUtility</span>()).chosen,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> same_evpi<span class="op">=</span><span class="fu">evpi</span>(pond) <span class="op">≈</span> <span class="fu">evpi</span>(by_group),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a> same_regret_table<span class="op">=</span><span class="fu">regret_table</span>(pond) <span class="op">≈</span> <span class="fu">regret_table</span>(by_group))</span></code></pre></div>
+<pre><code>(same_scores = true, same_choice = true, same_evpi = true, same_regret_table = true)</code></pre>
+<p>Treating the frogs early is best under these weights, by about five
+frogs per pond over no intervention; culling loses frogs. With the
+groups as scenarios and no weights, the belief box is swapped for a set
+of possibilities and the robust rules of the core apply, with the same
+answers as in the core vignette:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>scenarios <span class="op">=</span> <span class="fu">replace_box</span>(pond, <span class="op">:</span>design_weights, <span class="fu">ScenarioSet</span>(group[<span class="fl">2</span>]))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>by_group_scenarios <span class="op">=</span> <span class="fu">DecisionProblem</span>(by_group.payoff, <span class="fu">ScenarioSet</span>(group[<span class="fl">2</span>]); baseline<span class="op">=:</span>none)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>(maximin<span class="op">=</span><span class="fu">decide</span>(scenarios, <span class="fu">Maximin</span>()).chosen, minimax_regret<span class="op">=</span><span class="fu">decide</span>(scenarios, <span class="fu">MinimaxRegret</span>()).chosen,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a> same_as_core<span class="op">=</span><span class="fu">decide</span>(scenarios, <span class="fu">Maximin</span>()).chosen <span class="op">==</span> <span class="fu">decide</span>(by_group_scenarios, <span class="fu">Maximin</span>()).chosen <span class="op">&amp;&amp;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">decide</span>(scenarios, <span class="fu">MinimaxRegret</span>()).chosen <span class="op">==</span> <span class="fu">decide</span>(by_group_scenarios, <span class="fu">MinimaxRegret</span>()).chosen)</span></code></pre></div>
+<pre><code>(maximin = [:clean_frogs_d14_f75], minimax_regret = [:clean_frogs_d14_f75], same_as_core = true)</code></pre>
+<p>How much would knowing the group be worth?</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(evpi_in_frogs<span class="op">=</span><span class="fu">evpi</span>(pond), gain_of_the_best_action<span class="op">=</span><span class="fu">maximum</span>(gains))</span></code></pre></div>
+<pre><code>(evpi_in_frogs = 0.17593808630394037, gain_of_the_best_action = 4.941064638372526)</code></pre>
+<p>Very little: early treatment is the best action, or close to it, in
+every group, so knowing the group would rarely change what is done.</p>
+<h1 id="what-the-pipeline-adds">What the pipeline adds</h1>
+<h2 id="1-a-survey-as-a-chain-swabs-assay-report">1. A survey as a
+chain: swabs, assay, report</h2>
+<p>A survey before the decision does not reveal the group. It goes
+through three steps, each of which loses something. <strong>Every number
+in this section is illustrative.</strong></p>
+<ol type="1">
+<li><strong>Swabs.</strong> Frogs are swabbed; the infection load on the
+swabs (none, low, high) depends on the group.</li>
+<li><strong>Assay.</strong> A qPCR classifies each batch of swabs, with
+errors.</li>
+<li><strong>Report.</strong> The laboratory reports positive or
+negative, and calls a low qPCR signal positive only half the time.</li>
+</ol>
+<div class="sourceCode" id="cb14"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>load <span class="op">=</span> <span class="op">:</span>swab_load <span class="op">=&gt;</span> [<span class="op">:</span>none, <span class="op">:</span>low, <span class="op">:</span>high]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>qpcr <span class="op">=</span> <span class="op">:</span>qpcr <span class="op">=&gt;</span> [<span class="op">:</span>negative, <span class="op">:</span>low_positive, <span class="op">:</span>high_positive]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>report <span class="op">=</span> <span class="op">:</span>report <span class="op">=&gt;</span> [<span class="op">:</span>negative, <span class="op">:</span>positive]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#                                    A     B     C     D     E</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>swabs <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>swabs, group, load, [<span class="fl">0.05</span> <span class="fl">0.10</span> <span class="fl">0.20</span> <span class="fl">0.60</span> <span class="fl">0.30</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                          <span class="fl">0.25</span> <span class="fl">0.40</span> <span class="fl">0.50</span> <span class="fl">0.30</span> <span class="fl">0.40</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                                          <span class="fl">0.70</span> <span class="fl">0.50</span> <span class="fl">0.30</span> <span class="fl">0.10</span> <span class="fl">0.30</span>])</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>assay <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>assay, load, qpcr, [<span class="fl">0.95</span> <span class="fl">0.20</span> <span class="fl">0.02</span>; <span class="fl">0.05</span> <span class="fl">0.70</span> <span class="fl">0.18</span>; <span class="fl">0.00</span> <span class="fl">0.10</span> <span class="fl">0.80</span>])</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>reporting <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>reporting, qpcr, report, [<span class="fl">1.0</span> <span class="fl">0.5</span> <span class="fl">0.0</span>; <span class="fl">0.0</span> <span class="fl">0.5</span> <span class="fl">1.0</span>])</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>surveyed <span class="op">=</span> <span class="fu">decision_pipeline</span>(pond, swabs, assay, reporting)</span></code></pre></div>
+<pre><code>DecisionPipeline: 6 boxes, inputs Symbol[], outputs Symbol[]
+  belief      design_weights : I → group
+  policy      manager : I → action   (open)
+  utility     survivors : action ⊗ group → ℝ
+  channel     swabs : group → swab_load
+  channel     assay : swab_load → qpcr
+  channel     reporting : qpcr → report</code></pre>
+<p>The manager can be handed the result at any stage of the chain.
+Reading the group itself is the perfect-information limit.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">reading</span>(wire) <span class="op">=</span> <span class="fu">with_observation</span>(surveyed, <span class="op">:</span>manager, wire)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>stages <span class="op">=</span> [<span class="op">:</span>group, <span class="op">:</span>swab_load, <span class="op">:</span>qpcr, <span class="op">:</span>report]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>informed <span class="op">=</span> [<span class="fu">solve_policy_program</span>(<span class="fu">reading</span>(w)).value for w <span class="kw">in</span> stages]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>nothing_read <span class="op">=</span> <span class="fu">act_now_value</span>(pond)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;the manager reads&quot;</span>, <span class="st">&quot;expected survivors&quot;</span>, <span class="st">&quot;value of the information (frogs)&quot;</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;gain over no intervention&quot;</span>],</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>         [[w, v, v <span class="op">-</span> nothing_read, v <span class="op">-</span> from_pipeline.scores[<span class="fl">1</span>]] for (w, v) <span class="kw">in</span> <span class="fu">zip</span>(stages, informed)];</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>         digits<span class="op">=</span><span class="fl">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">the manager reads</th>
+<th style="text-align: right;">expected survivors</th>
+<th style="text-align: right;">value of the information (frogs)</th>
+<th style="text-align: right;">gain over no intervention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>group</code></td>
+<td style="text-align: right;">22.178</td>
+<td style="text-align: right;">0.1759</td>
+<td style="text-align: right;">5.117</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>swab_load</code></td>
+<td style="text-align: right;">22.0021</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.9411</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>qpcr</code></td>
+<td style="text-align: right;">22.0021</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.9411</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>report</code></td>
+<td style="text-align: right;">22.0021</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.9411</td>
+</tr>
+</tbody>
+</table>
+<p>The value cannot rise along the chain: each stage is the one before
+passed through a noisy step. Here it is zero from the swabs onwards. No
+survey result changes the best action, because the decision hardly
+depends on the group, and even perfect knowledge of the group is worth a
+fraction of a frog. The diagram also says, without any arithmetic, that
+the report adds nothing once the qPCR result is read:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>(report_given_qpcr<span class="op">=</span><span class="fu">observation_can_matter</span>(<span class="fu">reading</span>(<span class="op">:</span>qpcr), <span class="op">:</span>report),</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a> qpcr_given_report<span class="op">=</span><span class="fu">observation_can_matter</span>(<span class="fu">reading</span>(<span class="op">:</span>report), <span class="op">:</span>qpcr))</span></code></pre></div>
+<pre><code>(report_given_qpcr = false, qpcr_given_report = true)</code></pre>
+<h2 id="2-a-limit-on-handling">2. A limit on handling</h2>
+<p>Treating or culling means catching frogs. The cached table records
+how many were handled in each run (<em>from the cached table</em>):</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>handled <span class="op">=</span> <span class="fu">conditional_problem</span>(<span class="fu">DecisionProblem</span>(table, <span class="fu">IndividualsUtility</span>(<span class="op">:</span>handled); baseline<span class="op">=:</span>none), <span class="op">:</span>group)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>handled.payoff</span></code></pre></div>
+<p><strong>PayoffTable{Float64}: 10 actions × 5 states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>A</code></th>
+<th style="text-align: right;"><code>B</code></th>
+<th style="text-align: right;"><code>C</code></th>
+<th style="text-align: right;"><code>D</code></th>
+<th style="text-align: right;"><code>E</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>none</code></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d14_f75</code></td>
+<td style="text-align: right;">76.7729</td>
+<td style="text-align: right;">69.0028</td>
+<td style="text-align: right;">40.8196</td>
+<td style="text-align: right;">58.929</td>
+<td style="text-align: right;">59.0333</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d28_f75</code></td>
+<td style="text-align: right;">75.6248</td>
+<td style="text-align: right;">68.7972</td>
+<td style="text-align: right;">38.0765</td>
+<td style="text-align: right;">41.4145</td>
+<td style="text-align: right;">59.6067</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d56_f75</code></td>
+<td style="text-align: right;">30.0512</td>
+<td style="text-align: right;">65.2722</td>
+<td style="text-align: right;">34.2941</td>
+<td style="text-align: right;">19.0493</td>
+<td style="text-align: right;">59.1333</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d14_f75</code></td>
+<td style="text-align: right;">76.7729</td>
+<td style="text-align: right;">69.0028</td>
+<td style="text-align: right;">40.8196</td>
+<td style="text-align: right;">58.929</td>
+<td style="text-align: right;">59.0333</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d28_f75</code></td>
+<td style="text-align: right;">75.6248</td>
+<td style="text-align: right;">68.7972</td>
+<td style="text-align: right;">38.0765</td>
+<td style="text-align: right;">41.4145</td>
+<td style="text-align: right;">59.6067</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cull_frogs_d56_f75</code></td>
+<td style="text-align: right;">30.0512</td>
+<td style="text-align: right;">65.2722</td>
+<td style="text-align: right;">34.2941</td>
+<td style="text-align: right;">19.0493</td>
+<td style="text-align: right;">59.1333</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d14_f75</code></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d28_f75</code></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d56_f75</code></td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+</tbody>
+</table>
+<p>Suppose the field team can handle, on average over the ponds it is
+responsible for, at most 20 frogs per pond
+(<strong>illustrative</strong>). Early treatment handles about 70. That
+limit is a side condition on the policy, which the rule-based analysis
+has no place for; in the compiled form of the diagram it is one more
+constraint.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>limit <span class="op">=</span> <span class="fu">expectation_constraint</span>(<span class="op">:</span>field_team, (action, group), handled.payoff.Q; at_most<span class="op">=</span><span class="fl">20</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">under_limit</span>(p)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">solve_policy_program</span>(p; constraints<span class="op">=</span>[limit])</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (frogs<span class="op">=</span>s.value, deterministic<span class="op">=</span>s.deterministic, policy<span class="op">=</span>s.policy)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>unread <span class="op">=</span> <span class="fu">under_limit</span>(pond)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> <span class="dt">Any</span>[[<span class="st">&quot;nothing&quot;</span>, unread.frogs, <span class="fl">0.0</span>, unread.frogs <span class="op">-</span> from_pipeline.scores[<span class="fl">1</span>]]]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> w <span class="kw">in</span> stages</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> <span class="fu">under_limit</span>(<span class="fu">reading</span>(w))</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(rows, [w, r.frogs, r.frogs <span class="op">-</span> unread.frogs, r.frogs <span class="op">-</span> from_pipeline.scores[<span class="fl">1</span>]])</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;the manager reads&quot;</span>, <span class="st">&quot;expected survivors under the limit&quot;</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;value of the information (frogs)&quot;</span>, <span class="st">&quot;gain over no intervention&quot;</span>], rows; digits<span class="op">=</span><span class="fl">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">the manager reads</th>
+<th style="text-align: right;">expected survivors under the limit</th>
+<th style="text-align: right;">value of the information (frogs)</th>
+<th style="text-align: right;">gain over no intervention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">nothing</td>
+<td style="text-align: right;">18.576</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.515</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>group</code></td>
+<td style="text-align: right;">20.286</td>
+<td style="text-align: right;">1.71</td>
+<td style="text-align: right;">3.225</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>swab_load</code></td>
+<td style="text-align: right;">18.892</td>
+<td style="text-align: right;">0.316</td>
+<td style="text-align: right;">1.831</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>qpcr</code></td>
+<td style="text-align: right;">18.752</td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">1.691</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>report</code></td>
+<td style="text-align: right;">18.578</td>
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">1.517</td>
+</tr>
+</tbody>
+</table>
+<p>With the limit the best policy without a survey treats only some
+ponds, chosen by lot. (The other action in the mixture, cleaning the
+water late, handles no frogs; its difference from no intervention is
+within the simulation error of the table, as the core vignette
+shows.)</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;action&quot;</span>, <span class="st">&quot;probability&quot;</span>],</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>         [[a, unread.policy[i, <span class="fl">1</span>]] for (i, a) <span class="kw">in</span> <span class="fu">enumerate</span>(action[<span class="fl">2</span>]) if unread.policy[i, <span class="fl">1</span>] <span class="op">&gt;</span> <span class="fl">1e-9</span>];</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>         digits<span class="op">=</span><span class="fl">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;">probability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>clean_frogs_d14_f75</code></td>
+<td style="text-align: right;">0.289</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>clean_environment_d56_f75</code></td>
+<td style="text-align: right;">0.711</td>
+</tr>
+</tbody>
+</table>
+<p>And now information is worth something. When only some ponds can be
+treated, it matters which: the survey lets the team spend its handling
+where a treated pond gains most. The value of the same survey, in frogs
+per pond:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;the manager reads&quot;</span>, <span class="st">&quot;without the limit&quot;</span>, <span class="st">&quot;with the limit&quot;</span>],</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>         [[w, informed[i] <span class="op">-</span> nothing_read, rows[i <span class="op">+</span> <span class="fl">1</span>][<span class="fl">3</span>]] for (i, w) <span class="kw">in</span> <span class="fu">enumerate</span>(stages)];</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>         digits<span class="op">=</span><span class="fl">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">the manager reads</th>
+<th style="text-align: right;">without the limit</th>
+<th style="text-align: right;">with the limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>group</code></td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">1.71</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>swab_load</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.316</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>qpcr</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.176</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>report</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.003</td>
+</tr>
+</tbody>
+</table>
+<p>With the limit the value is positive and falls at every step of the
+chain; by the time the result has been reduced to a positive or negative
+report almost none is left. The conclusion that a survey is worthless
+was a conclusion about a manager with no limit on handling.</p>
+<h2 id="3-what-an-error-in-the-weights-can-cost">3. What an error in the
+weights can cost</h2>
+<p>The design weights are an assumption. Suppose the true weights of the
+groups differ from them by at most ε in total variation (an ε share of
+the probability moved from some groups to others). The diagram returns a
+bound on the frogs lost by deciding with the design weights.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bound_at</span>(ε)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    stated <span class="op">=</span> <span class="fu">with_error</span>(pond, <span class="op">:</span>design_weights <span class="op">=&gt;</span> ε)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (ε<span class="op">=</span>ε, pipeline_bound<span class="op">=</span><span class="fu">fidelity_bound</span>(stated),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>            sharper_bound<span class="op">=</span><span class="fu">decision_loss_bound</span>(by_group, ε))</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>[<span class="fu">bound_at</span>(ε) for ε <span class="kw">in</span> (<span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>)]</span></code></pre></div>
+<pre><code>3-element Vector{@NamedTuple{ε::Float64, pipeline_bound::Float64, sharper_bound::Float64}}:
+ (ε = 0.01, pipeline_bound = 1.5694202898550722, sharper_bound = 1.5547212672733397)
+ (ε = 0.05, pipeline_bound = 7.847101449275361, sharper_bound = 7.773606336366699)
+ (ε = 0.1, pipeline_bound = 15.694202898550722, sharper_bound = 15.547212672733398)</code></pre>
+<p>The pipeline’s bound uses the range of the count over all actions and
+groups; the core’s <code>decision_loss_bound</code> uses the largest
+range of a single action and is sharper when the payoff table is at hand
+(here the two are close). Both are guarantees and both are loose: at ε =
+0.01 the bound is about a frog and a half, and at ε = 0.05 it already
+exceeds the gain of the best action over no intervention. The loss that
+actually occurs for a few particular shifts of the weights:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> <span class="fu">probabilities</span>(by_group.belief)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">actual_loss</span>(shifted)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    truth <span class="op">=</span> <span class="fu">replace_box</span>(pond, <span class="op">:</span>design_weights, shifted)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    chosen <span class="op">=</span> <span class="fu">first_choice</span>(<span class="fu">decide</span>(pond, <span class="fu">MaxExpectedUtility</span>()))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">act_now_value</span>(truth) <span class="op">-</span> <span class="fu">pipeline_value</span>(truth; policies<span class="op">=</span>(<span class="op">:</span>manager <span class="op">=&gt;</span> chosen))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">shift</span>(from, to, ε) <span class="op">=</span> (w <span class="op">=</span> <span class="fu">copy</span>(weights); w[from] <span class="op">-=</span> ε; w[to] <span class="op">+=</span> ε; w)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;shift of 0.1 of the weight&quot;</span>, <span class="st">&quot;frogs lost by deciding with the design weights&quot;</span>],</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>         [[<span class="st">&quot;from A to D&quot;</span>, <span class="fu">actual_loss</span>(<span class="fu">shift</span>(<span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">0.1</span>))], [<span class="st">&quot;from A to C&quot;</span>, <span class="fu">actual_loss</span>(<span class="fu">shift</span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">0.1</span>))],</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>          [<span class="st">&quot;from D to B&quot;</span>, <span class="fu">actual_loss</span>(<span class="fu">shift</span>(<span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">0.1</span>))]]; digits<span class="op">=</span><span class="fl">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">shift of 0.1 of the weight</th>
+<th style="text-align: right;">frogs lost by deciding with the design
+weights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">from A to D</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">from A to C</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">from D to B</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>For errors in the weights of more than a few per cent the bound
+cannot certify the choice, and the direct check is the informative one:
+the choice does not move under these shifts.</p>
+<h1 id="summary">Summary</h1>
+<ul>
+<li>The pipeline reproduces the core analysis: the same expected
+survivors, the same best action, the same regret table and value of
+perfect information, the same robust choices.</li>
+<li>A survey written as a chain of three boxes has a value that cannot
+rise from one step to the next, and the graph shows which readings are
+redundant.</li>
+<li>A handling limit is one constraint in the compiled diagram. It
+changes the answer to “is a survey worth it”: without the limit the
+survey is worth nothing, with it the survey helps to decide which ponds
+are treated.</li>
+<li>The fidelity bound is stated with its limits: here it certifies the
+choice only for small errors in the weights.</li>
+</ul>
+</body>
+</html>

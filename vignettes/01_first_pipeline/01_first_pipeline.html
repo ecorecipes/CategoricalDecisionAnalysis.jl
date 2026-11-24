@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Simon Frost" />
+  <title>A decision as a diagram</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">
+html { font-size: 17px; }
+body {
+font-family: "STIX Two Text", "Source Serif 4", Georgia, "Times New Roman", serif;
+line-height: 1.5; color: #1a1a1a; background: #fdfdfd;
+max-width: 50em; margin: 0 auto; padding: 2em 1.5em 4em;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+h1.title { margin-top: 0.5em; }
+p.author { color: #555; }
+a { color: #1f5fa8; }
+code, pre {
+font-family: "JuliaMono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+font-size: 0.86em;
+}
+pre { background: #f4f4f2; padding: 0.8em 1em; overflow-x: auto; border-radius: 4px; }
+code { background: #f4f4f2; padding: 0.05em 0.25em; border-radius: 3px; }
+pre code { background: none; padding: 0; font-size: 1em; }
+table { border-collapse: collapse; margin: 1em 0; font-size: 0.95em; display: block; overflow-x: auto; }
+th, td { padding: 0.3em 0.8em; border-bottom: 1px solid #ddd; }
+thead th { border-bottom: 2px solid #888; }
+img { max-width: 100%; height: auto; }
+nav#TOC { background: #f4f4f2; padding: 0.6em 1em; border-radius: 4px; }
+nav#TOC ul { margin: 0.2em 0; padding-left: 1.2em; }
+@media (prefers-color-scheme: dark) {
+body { color: #e6e6e6; background: #1c1c1e; }
+a { color: #8ab4f8; }
+pre, code, nav#TOC { background: #2a2a2d; }
+th, td { border-bottom-color: #444; }
+img { background: #fff; }
+}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">A decision as a diagram</h1>
+<p class="author">Simon Frost</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#motivation" id="toc-motivation">Motivation</a></li>
+<li><a href="#the-problem" id="toc-the-problem">The problem</a></li>
+<li><a href="#wires" id="toc-wires">Wires</a></li>
+<li><a href="#boxes" id="toc-boxes">Boxes</a></li>
+<li><a href="#the-diagram" id="toc-the-diagram">The diagram</a></li>
+<li><a href="#reading-the-payoff-table-off-the-diagram" id="toc-reading-the-payoff-table-off-the-diagram">Reading the payoff
+table off the diagram</a></li>
+<li><a href="#adding-an-observation" id="toc-adding-an-observation">Adding an observation</a></li>
+<li><a href="#evaluating-a-fixed-policy" id="toc-evaluating-a-fixed-policy">Evaluating a fixed policy</a></li>
+<li><a href="#trying-a-different-world" id="toc-trying-a-different-world">Trying a different world</a></li>
+<li><a href="#what-a-number-depends-on" id="toc-what-a-number-depends-on">What a number depends on</a></li>
+<li><a href="#what-the-diagram-bought" id="toc-what-the-diagram-bought">What the diagram bought</a></li>
+</ul>
+</nav>
+<h1 id="motivation">Motivation</h1>
+<p>A decision analysis has a small number of moving parts: what is
+believed about the world, what can be observed before acting, what is
+done, what follows from it, and what is counted in the end. In a
+spreadsheet these are mixed together in one table. This vignette keeps
+them apart, as boxes joined by wires, and then reads the usual answers
+(the payoff table, the best action, the gain over doing nothing, the
+value of a survey) off the diagram.</p>
+<p>No category theory is needed to follow it. The diagram is a picture
+of who needs to know what, and each answer is a function applied to the
+picture.</p>
+<p>The currency is individuals: outcomes are counted as animals of the
+focal species.</p>
+<h1 id="the-problem">The problem</h1>
+<p>Water voles live in colonies along a lowland river. American mink,
+where they are present in numbers, can remove a colony in a season. The
+manager can leave the reach alone, trap mink, or restore the bank
+vegetation that gives voles cover. What is not known is the mink
+pressure on the reach this year: low or high.</p>
+<p><strong>All numbers in this vignette are illustrative.</strong> They
+were chosen to make the arithmetic easy to follow. They are not data and
+they are not estimates for any real river.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CategoricalDecisionAnalysis</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="fu">joinpath</span>(<span class="st">&quot;..&quot;</span>, <span class="st">&quot;_common.jl&quot;</span>))   <span class="co"># plot defaults and small tables, no analysis</span></span></code></pre></div>
+<pre><code>Main.Notebook.voi_table</code></pre>
+<p><code>CategoricalDecisionAnalysis</code> re-exports everything in
+<code>DecisionAnalysis</code>, so the one <code>using</code> line is
+enough.</p>
+<h1 id="wires">Wires</h1>
+<p>A wire is a variable with a finite list of values. It is written
+<code>name =&gt; labels</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mink <span class="op">=</span> <span class="op">:</span>mink_pressure <span class="op">=&gt;</span> [<span class="op">:</span>low, <span class="op">:</span>high]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>action <span class="op">=</span> <span class="op">:</span>action <span class="op">=&gt;</span> [<span class="op">:</span>no_intervention, <span class="op">:</span>trap_mink, <span class="op">:</span>restore_banks]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>colony <span class="op">=</span> <span class="op">:</span>colony <span class="op">=&gt;</span> [<span class="op">:</span>lost, <span class="op">:</span>reduced, <span class="op">:</span>thriving]</span></code></pre></div>
+<pre><code>:colony =&gt; [:lost, :reduced, :thriving]</code></pre>
+<h1 id="boxes">Boxes</h1>
+<p>There are five kinds of box. Three are needed for a first
+analysis.</p>
+<p>A <strong>belief box</strong> says what is believed about a state.
+Here mink pressure is low with probability 3/5.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>prior <span class="op">=</span> <span class="fu">belief_box</span>(<span class="op">:</span>what_we_believe, mink, [<span class="fl">3</span> <span class="op">//</span> <span class="fl">5</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">5</span>])</span></code></pre></div>
+<pre><code>DecisionPipeline: 1 box, inputs Symbol[], outputs [:mink_pressure]
+  belief      what_we_believe : I → mink_pressure</code></pre>
+<p>A <strong>consequence box</strong> is the model: for every action and
+every state, the probability of each outcome. The table has the outcome
+first, then the inputs in the order they are listed, so
+<code>model[:, a, m]</code> is the distribution of the colony’s fate
+under action <code>a</code> and mink pressure <code>m</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> <span class="fu">zeros</span>(<span class="dt">Rational</span>{<span class="dt">Int</span>}, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">2</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#                          lost    reduced  thriving</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">1</span>, <span class="fl">1</span>] <span class="op">=</span> [<span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">3</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">6</span> <span class="op">//</span> <span class="fl">10</span>]   <span class="co"># no intervention, low mink pressure</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">1</span>, <span class="fl">2</span>] <span class="op">=</span> [<span class="fl">7</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>]   <span class="co"># no intervention, high</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">2</span>, <span class="fl">1</span>] <span class="op">=</span> [<span class="fl">1</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">7</span> <span class="op">//</span> <span class="fl">10</span>]   <span class="co"># trapping, low</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">2</span>, <span class="fl">2</span>] <span class="op">=</span> [<span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">4</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">4</span> <span class="op">//</span> <span class="fl">10</span>]   <span class="co"># trapping, high</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">3</span>, <span class="fl">1</span>] <span class="op">=</span> [<span class="fl">0</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">8</span> <span class="op">//</span> <span class="fl">10</span>]   <span class="co"># bank restoration, low</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>model[<span class="op">:</span>, <span class="fl">3</span>, <span class="fl">2</span>] <span class="op">=</span> [<span class="fl">5</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">3</span> <span class="op">//</span> <span class="fl">10</span>, <span class="fl">2</span> <span class="op">//</span> <span class="fl">10</span>]   <span class="co"># bank restoration, high</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>outcome <span class="op">=</span> <span class="fu">consequence_box</span>(<span class="op">:</span>colony_model, (action, mink), colony, model)</span></code></pre></div>
+<pre><code>DecisionPipeline: 1 box, inputs [:action, :mink_pressure], outputs [:colony]
+  consequence colony_model : action ⊗ mink_pressure → colony</code></pre>
+<p>A <strong>utility box</strong> says what is counted: the number of
+voles on the reach next spring, for each fate of the colony.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>voles <span class="op">=</span> <span class="fu">utility_box</span>(<span class="op">:</span>voles_next_spring, colony, [<span class="fl">0</span>, <span class="fl">40</span>, <span class="fl">120</span>])</span></code></pre></div>
+<pre><code>DecisionPipeline: 1 box, inputs [:colony], outputs Symbol[]
+  utility     voles_next_spring : colony → ℝ</code></pre>
+<p>A <strong>policy box</strong> is the decision. It is left open:
+nothing has been chosen yet. The empty pair of brackets says that the
+manager observes nothing before choosing.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>manager <span class="op">=</span> <span class="fu">policy_box</span>(<span class="op">:</span>manager, (), action)</span></code></pre></div>
+<pre><code>DecisionPipeline: 1 box, inputs Symbol[], outputs [:action]
+  policy      manager : I → action   (open)</code></pre>
+<h1 id="the-diagram">The diagram</h1>
+<p><code>decision_pipeline</code> joins the boxes by the names of their
+wires: the belief feeds the model, the policy feeds the model, the model
+feeds the count.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>reach <span class="op">=</span> <span class="fu">decision_pipeline</span>(prior, manager, outcome, voles)</span></code></pre></div>
+<pre><code>DecisionPipeline: 4 boxes, inputs Symbol[], outputs Symbol[]
+  belief      what_we_believe : I → mink_pressure
+  policy      manager : I → action   (open)
+  consequence colony_model : action ⊗ mink_pressure → colony
+  utility     voles_next_spring : colony → ℝ</code></pre>
+<p>The printout lists each box with the wires it reads and the wire it
+writes. <code>I</code> means “nothing” (a belief has no input) and
+<code>ℝ</code> means “a number” (a utility has no output wire).</p>
+<h1 id="reading-the-payoff-table-off-the-diagram">Reading the payoff
+table off the diagram</h1>
+<p>The payoff table of a decision analysis has one row per action and
+one column per state, and in each cell the expected count. It is not
+typed in here; it is computed from the model and the count.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>problem <span class="op">=</span> <span class="fu">decision_problem</span>(reach; baseline<span class="op">=:</span>no_intervention)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>problem.payoff</span></code></pre></div>
+<p><strong>PayoffTable{Rational{Int64}}: 3 actions × 2
+states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>low</code></th>
+<th style="text-align: right;"><code>high</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>no_intervention</code></td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trap_mink</code></td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>restore_banks</code></td>
+<td style="text-align: right;">104</td>
+<td style="text-align: right;">36</td>
+</tr>
+</tbody>
+</table>
+<p>Each cell is the model’s distribution of fates under that action and
+that state, weighted by the voles counted for each fate. For example
+trapping under high mink pressure gives 0.2 × 0 + 0.4 × 40 + 0.4 × 120 =
+64 voles.</p>
+<p>What <code>decision_problem</code> returns is an ordinary
+<code>DecisionProblem</code> of <code>DecisionAnalysis</code>, so
+everything in that package applies to it.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>expected <span class="op">=</span> <span class="fu">decide</span>(problem, <span class="fu">MaxExpectedUtility</span>())</span></code></pre></div>
+<p><strong>DecisionResult: MaxExpectedUtility (higher is
+better)</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;">score</th>
+<th style="text-align: right;">chosen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>no_intervention</code></td>
+<td style="text-align: right;">58.4</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trap_mink</code></td>
+<td style="text-align: right;">80.8</td>
+<td style="text-align: right;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>restore_banks</code></td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">-</td>
+</tr>
+</tbody>
+</table>
+<p>First choice: trap_mink</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gain_over_baseline</span>(problem)</span></code></pre></div>
+<p><strong>PayoffTable{Rational{Int64}}: 3 actions × 2
+states</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">action</th>
+<th style="text-align: right;"><code>low</code></th>
+<th style="text-align: right;"><code>high</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>no_intervention</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trap_mink</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>restore_banks</code></td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">16</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb18"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">expected_gain_over_baseline</span>(problem)</span></code></pre></div>
+<pre><code>3-element Vector{Rational{Int64}}:
+    0
+ 112//5
+  92//5</code></pre>
+<p>Under this belief trapping gains about 22 voles over no intervention
+and bank restoration about 18.</p>
+<p>The same functions also take the diagram directly:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>(best<span class="op">=</span><span class="fu">first_choice</span>(<span class="fu">decide</span>(reach, <span class="fu">MaxExpectedUtility</span>())), value<span class="op">=</span><span class="fu">act_now_value</span>(reach),</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a> value_of_knowing_the_mink_pressure<span class="op">=</span><span class="fu">evpi</span>(reach))</span></code></pre></div>
+<pre><code>(best = :trap_mink, value = 404//5, value_of_knowing_the_mink_pressure = 36//5)</code></pre>
+<p>Knowing the mink pressure before choosing would be worth about seven
+voles: with low pressure the manager would restore the banks, with high
+pressure trap.</p>
+<h1 id="adding-an-observation">Adding an observation</h1>
+<p>A footprint raft left on the reach for a fortnight records mink
+tracks. It is not perfect: it misses mink that are there one time in
+four, and records a passing animal one time in ten when pressure is low.
+An observation process is a <strong>channel box</strong>.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>raft <span class="op">=</span> <span class="op">:</span>raft <span class="op">=&gt;</span> [<span class="op">:</span>no_tracks, <span class="op">:</span>tracks]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>survey <span class="op">=</span> <span class="fu">channel_box</span>(<span class="op">:</span>footprint_raft, mink, raft, [<span class="fl">9</span><span class="op">//</span><span class="fl">10</span> <span class="fl">1</span><span class="op">//</span><span class="fl">4</span>; <span class="fl">1</span><span class="op">//</span><span class="fl">10</span> <span class="fl">3</span><span class="op">//</span><span class="fl">4</span>])</span></code></pre></div>
+<pre><code>DecisionPipeline: 1 box, inputs [:mink_pressure], outputs [:raft]
+  channel     footprint_raft : mink_pressure → raft</code></pre>
+<p>The manager now reads the raft before choosing. Only the policy box
+changes: it gains an input wire.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>informed_manager <span class="op">=</span> <span class="fu">policy_box</span>(<span class="op">:</span>manager, raft, action)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>surveyed <span class="op">=</span> <span class="fu">decision_pipeline</span>(prior, survey, informed_manager, outcome, voles)</span></code></pre></div>
+<pre><code>DecisionPipeline: 5 boxes, inputs Symbol[], outputs Symbol[]
+  belief      what_we_believe : I → mink_pressure
+  channel     footprint_raft : mink_pressure → raft
+  policy      manager : raft → action   (open)
+  consequence colony_model : action ⊗ mink_pressure → colony
+  utility     voles_next_spring : colony → ℝ</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">value_of_information</span>(surveyed)</span></code></pre></div>
+<pre><code>(act_now = 404//5, informed = 2112//25, evsi = 92//25, perfect = 88//1, evpi = 36//5)</code></pre>
+<p><code>act_now</code> is the best expected count with no observation,
+<code>informed</code> the best expected count when the manager can act
+on the raft, and <code>evsi</code> their difference: the raft is worth
+about 3.7 voles here, out of the 7.2 that perfect knowledge would be
+worth.</p>
+<p>What the best policy is can be read from the compiled form of the
+diagram (a later vignette is about that):</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> <span class="fu">solve_policy_program</span>(surveyed)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>(<span class="fu">vcat</span>(<span class="st">&quot;after the raft shows&quot;</span>, <span class="fu">String</span>.(best.observations)),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>         [<span class="fu">vcat</span>(<span class="fu">String</span>(a), [<span class="fu">Float64</span>(best.policy[i, z]) for z <span class="kw">in</span> <span class="fu">eachindex</span>(best.observations)])</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>          for (i, a) <span class="kw">in</span> <span class="fu">enumerate</span>(best.actions)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">after the raft shows</th>
+<th style="text-align: right;">no_tracks</th>
+<th style="text-align: right;">tracks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">no_intervention</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">trap_mink</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">restore_banks</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Restore the banks if the raft is clean, trap if it shows tracks.</p>
+<h1 id="evaluating-a-fixed-policy">Evaluating a fixed policy</h1>
+<p>A policy can also be fixed and the diagram simply evaluated. A policy
+is given as a rule from what is observed to what is done.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>by_the_raft <span class="op">=</span> <span class="fu">Dict</span>(<span class="op">:</span>no_tracks <span class="op">=&gt;</span> <span class="op">:</span>restore_banks, <span class="op">:</span>tracks <span class="op">=&gt;</span> <span class="op">:</span>trap_mink)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>always_trap <span class="op">=</span> <span class="fu">Dict</span>(<span class="op">:</span>no_tracks <span class="op">=&gt;</span> <span class="op">:</span>trap_mink, <span class="op">:</span>tracks <span class="op">=&gt;</span> <span class="op">:</span>trap_mink)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>never <span class="op">=</span> <span class="fu">Dict</span>(<span class="op">:</span>no_tracks <span class="op">=&gt;</span> <span class="op">:</span>no_intervention, <span class="op">:</span>tracks <span class="op">=&gt;</span> <span class="op">:</span>no_intervention)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(policy) <span class="op">=</span> <span class="fu">pipeline_value</span>(surveyed; policies<span class="op">=</span>(<span class="op">:</span>manager <span class="op">=&gt;</span> policy))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;policy&quot;</span>, <span class="st">&quot;expected voles&quot;</span>, <span class="st">&quot;gain over no intervention&quot;</span>],</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>         [[<span class="st">&quot;no intervention&quot;</span>, <span class="fu">value</span>(never), <span class="fl">0</span>],</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>          [<span class="st">&quot;always trap&quot;</span>, <span class="fu">value</span>(always_trap), <span class="fu">value</span>(always_trap) <span class="op">-</span> <span class="fu">value</span>(never)],</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>          [<span class="st">&quot;restore if clean, trap if tracks&quot;</span>, <span class="fu">value</span>(by_the_raft),</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">value</span>(by_the_raft) <span class="op">-</span> <span class="fu">value</span>(never)]])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">policy</th>
+<th style="text-align: right;">expected voles</th>
+<th style="text-align: right;">gain over no intervention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">no intervention</td>
+<td style="text-align: right;">58.4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">always trap</td>
+<td style="text-align: right;">80.8</td>
+<td style="text-align: right;">22.4</td>
+</tr>
+<tr>
+<td style="text-align: left;">restore if clean, trap if tracks</td>
+<td style="text-align: right;">84.48</td>
+<td style="text-align: right;">26.08</td>
+</tr>
+</tbody>
+</table>
+<p>The numbers are exact fractions because the inputs were: the package
+does not turn rational inputs into floating point.</p>
+<h1 id="trying-a-different-world">Trying a different world</h1>
+<p>Because the action is a wire, an action can be imposed and the
+consequences read off, without a policy. <code>intervene</code> sets a
+wire to a value. Setting a wire that a box produces removes that box:
+the wire no longer depends on what it used to depend on.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>trapped <span class="op">=</span> <span class="fu">intervene</span>(surveyed, <span class="op">:</span>action <span class="op">=&gt;</span> <span class="op">:</span>trap_mink)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>(expected_voles<span class="op">=</span><span class="fu">pipeline_value</span>(trapped),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a> if_mink_pressure_were_high<span class="op">=</span><span class="fu">pipeline_value</span>(<span class="fu">intervene</span>(trapped, <span class="op">:</span>mink_pressure <span class="op">=&gt;</span> <span class="op">:</span>high)))</span></code></pre></div>
+<pre><code>(expected_voles = 404//5, if_mink_pressure_were_high = 64//1)</code></pre>
+<h1 id="what-a-number-depends-on">What a number depends on</h1>
+<p>Every answer above came from the boxes. <code>box_provenance</code>
+lists the boxes that a number depends on, in the order in which they
+feed each other.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">md_table</span>([<span class="st">&quot;box&quot;</span>, <span class="st">&quot;kind&quot;</span>, <span class="st">&quot;reads&quot;</span>, <span class="st">&quot;writes&quot;</span>],</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>         [[<span class="fu">String</span>(b.name), <span class="fu">String</span>(b.kind), <span class="fu">isempty</span>(b.inputs) ? <span class="st">&quot;nothing&quot;</span> <span class="op">:</span> <span class="fu">join</span>(b.inputs, <span class="st">&quot;, &quot;</span>),</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>           b.output <span class="op">===</span> <span class="cn">nothing</span> ? <span class="st">&quot;a count&quot;</span> <span class="op">:</span> <span class="fu">String</span>(b.output)] for b <span class="kw">in</span> <span class="fu">box_provenance</span>(surveyed)])</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">box</th>
+<th style="text-align: right;">kind</th>
+<th style="text-align: right;">reads</th>
+<th style="text-align: right;">writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">what<em>we</em>believe</td>
+<td style="text-align: right;">belief</td>
+<td style="text-align: right;">nothing</td>
+<td style="text-align: right;">mink_pressure</td>
+</tr>
+<tr>
+<td style="text-align: left;">footprint_raft</td>
+<td style="text-align: right;">channel</td>
+<td style="text-align: right;">mink_pressure</td>
+<td style="text-align: right;">raft</td>
+</tr>
+<tr>
+<td style="text-align: left;">manager</td>
+<td style="text-align: right;">policy</td>
+<td style="text-align: right;">raft</td>
+<td style="text-align: right;">action</td>
+</tr>
+<tr>
+<td style="text-align: left;">colony_model</td>
+<td style="text-align: right;">consequence</td>
+<td style="text-align: right;">action, mink_pressure</td>
+<td style="text-align: right;">colony</td>
+</tr>
+<tr>
+<td style="text-align: left;">voles<em>next</em>spring</td>
+<td style="text-align: right;">utility</td>
+<td style="text-align: right;">colony</td>
+<td style="text-align: right;">a count</td>
+</tr>
+</tbody>
+</table>
+<h1 id="what-the-diagram-bought">What the diagram bought</h1>
+<ul>
+<li>The payoff table was computed, not typed: change the model and the
+table follows.</li>
+<li>The observation was added by adding one box and one wire. Nothing
+else was edited.</li>
+<li>The same diagram was read in several ways: as a payoff table, as a
+value of information, under a fixed policy, under an imposed
+action.</li>
+</ul>
+<p>The <a href="../02_five_rules_one_pipeline/02_five_rules_one_pipeline.html">next
+vignette</a> keeps this diagram and changes the rule by which the
+manager chooses.</p>
+</body>
+</html>
