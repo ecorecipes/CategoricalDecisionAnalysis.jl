@@ -424,8 +424,8 @@ function _hull_distance(q::FiniteDistribution, gens::AbstractVector; optimizer=n
     T = _exact(S) ? Rational{BigInt} : Float64
     model = JuMP.GenericModel{T}()
     K = length(gens)
-    λ = JuMP.@variable(model, [1:K], lower_bound = zero(T), base_name = "λ")
-    t = JuMP.@variable(model, lower_bound = zero(T), base_name = "t")
+    λ = JuMP.@variable(model, [1:K], lower_bound=zero(T), base_name="λ")
+    t = JuMP.@variable(model, lower_bound=zero(T), base_name="t")
     simplex = JuMP.@constraint(model, sum(λ) == one(T))
     P = T[T(probability_of(g, x)) for x in support, g in gens]
     b = T[T(probability_of(q, x)) for x in support]
@@ -727,6 +727,63 @@ function (a::AlphaMaxminMap)(c::CredalHull{<:Real})
 end
 
 """
+    SmoothAmbiguityMap(η; weights=nothing)
+    SmoothAmbiguityMap(phi, inverse; weights=nothing)
+
+The smooth ambiguity criterion of Klibanoff, Marinacci & Mukerji (2005) on a credal set
+of distributions on the reals (the structure map of DecisionAnalysis's `SmoothAmbiguity`):
+`ϕ⁻¹(Σ_k μ_k ϕ(E_{p_k}[X]))`, where `p_k` are the generating distributions of the
+[`CredalHull`](@ref) and `μ` are second-order prior weights (uniform by default).
+
+With a real ambiguity-aversion parameter `η`, `ϕ(x) = -exp(-η x)` (evaluated with a
+shift-invariant log-sum-exp, collapsing to the weighted mean at `η = 0`). A structure map
+of the [`CredalMonad`](@ref) that is **not** an Eilenberg-Moore algebra in general.
+"""
+struct SmoothAmbiguityMap{F,G,W} <: StructureMap
+    phi::F
+    inverse::G
+    weights::W
+end
+function SmoothAmbiguityMap(η::Real; weights=nothing)
+    isfinite(η) || throw(ArgumentError("SmoothAmbiguityMap η must be finite, got $η"))
+    w = weights === nothing ? nothing : _check_smooth_weights(weights)
+    return SmoothAmbiguityMap(Float64(η), nothing, w)
+end
+function SmoothAmbiguityMap(phi::Function, inverse::Function; weights=nothing)
+    w = weights === nothing ? nothing : _check_smooth_weights(weights)
+    return SmoothAmbiguityMap(phi, inverse, w)
+end
+function _check_smooth_weights(weights)
+    w = Float64.(collect(weights))
+    (!isempty(w) && all(x -> isfinite(x) && x >= 0, w) && sum(w) > 0) ||
+        throw(ArgumentError("SmoothAmbiguityMap weights must be finite, nonnegative, and have positive sum"))
+    return w ./ sum(w)
+end
+function (s::SmoothAmbiguityMap)(c::CredalHull{<:Real})
+    E = ExpectationAlgebra()
+    vals = Float64[Float64(E(g)) for g in c.generators]
+    K = length(vals)
+    μ = if s.weights === nothing
+        fill(1.0 / K, K)
+    else
+        length(s.weights) == K ||
+            throw(ArgumentError("SmoothAmbiguityMap received $(length(s.weights)) " *
+                                "second-order weights for $K generating priors"))
+        s.weights
+    end
+    if s.phi isa Float64
+        η = s.phi
+        iszero(η) && return sum(μ[k] * vals[k] for k in 1:K)
+        α = -η
+        xstar = α < 0 ? minimum(vals[k] for k in 1:K if μ[k] > 0) :
+                maximum(vals[k] for k in 1:K if μ[k] > 0)
+        total = sum(μ[k] * exp(α * (vals[k] - xstar)) for k in 1:K if μ[k] > 0)
+        return xstar + log(total) / α
+    end
+    return s.inverse(sum(μ[k] * s.phi(vals[k]) for k in 1:K))
+end
+
+"""
     RestrictedMap(morphism, α)
 
 The structure map `α ∘ τ` of the source monad of the monad morphism `τ`: the
@@ -747,7 +804,8 @@ The monad whose values the structure map `α` summarises.
 monad_of(::IdentityAlgebra) = IdentityMonad()
 monad_of(::Union{ExpectationAlgebra,CVaRMap,QuantileMap}) = DistributionMonad()
 monad_of(::Union{InfimumAlgebra,SupremumAlgebra,HurwiczMap,LaplaceMap}) = PowersetMonad()
-function monad_of(::Union{LowerExpectationAlgebra,UpperExpectationAlgebra,AlphaMaxminMap})
+function monad_of(::Union{LowerExpectationAlgebra,UpperExpectationAlgebra,AlphaMaxminMap,
+                          SmoothAmbiguityMap})
     return CredalMonad()
 end
 monad_of(::TotalRewardAlgebra) = RewardMonad()
@@ -801,6 +859,7 @@ it does not need this property; a dynamic programme that adds rewards stage by s
 does.
 """
 is_translation_equivariant(::StructureMap) = true
+is_translation_equivariant(s::SmoothAmbiguityMap) = s.phi isa Float64
 is_translation_equivariant(α::TransportedAlgebra) = α.translation_equivariant
 is_translation_equivariant(r::RestrictedMap) = is_translation_equivariant(r.α)
 
@@ -987,6 +1046,7 @@ structure_map(::Laplace) = LaplaceMap()
 structure_map(::LowerExpectation) = LowerExpectationAlgebra()
 structure_map(::UpperExpectation) = UpperExpectationAlgebra()
 structure_map(a::AlphaMaxmin) = AlphaMaxminMap(a.α)
+structure_map(a::SmoothAmbiguity) = SmoothAmbiguityMap(a.phi, a.inverse, a.weights)
 structure_map(a::CVaR) = CVaRMap(a.α)
 structure_map(a::Quantile) = QuantileMap(a.α)
 
@@ -1059,9 +1119,9 @@ function belief_value(b::CredalSet, ::CredalMonad; states=nothing)
     return CredalHull([_state_distribution(b.states, p) for p in b.points])
 end
 function belief_value(b::AbstractBelief, M::UncertaintyMonad; states=nothing)
-    throw(MonadMismatchError(:belief_value, belief_monad(b), M,
-                             "there is no monad morphism from the belief's monad to " *
-                             "the one asked for"))
+    return throw(MonadMismatchError(:belief_value, belief_monad(b), M,
+                                    "there is no monad morphism from the belief's monad to " *
+                                    "the one asked for"))
 end
 
 # Kleisli maps
@@ -1111,8 +1171,8 @@ function _outcomes(::CredalMonad, m::CredalHull)
 end
 _outcomes(::RewardMonad, m::FiniteDistribution) = unique(last.(m.outcomes))
 function _outcomes(M::UncertaintyMonad, m)
-    throw(MonadMismatchError(:KleisliMap, M, typeof(m),
-                             "the image is not a value of the monad"))
+    return throw(MonadMismatchError(:KleisliMap, M, typeof(m),
+                                    "the image is not a value of the monad"))
 end
 
 function (f::KleisliMap)(x)

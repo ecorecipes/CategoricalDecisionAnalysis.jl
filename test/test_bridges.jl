@@ -29,4 +29,24 @@ using ResilienceCore: ResilienceCore
     chain = decision_pipeline(belief_box(:start, now_, [1, 0]), step1, step2,
                               utility_box(:frogs, :state_after => [:low, :high], [10, 50]))
     @test pipeline_value(chain) == sum((columns * columns * [1, 0]) .* [10, 50])
+
+    # FiniteBelief and Experiment bidirectional bridges + unified prune_generators + invert_kernel parity
+    b = FiniteBelief([:low, :high], [3 // 5, 2 // 5])
+    kb = finite_kernel(b; name=:state)
+    @test eltype(kb) == Rational{Int} && FiniteBelief(kb) == b
+    ex = Experiment([4 // 5 1 // 5; 1 // 5 4 // 5]; signals=[:neg, :pos],
+                    states=[:low, :high])
+    ke = finite_kernel(ex; state_name=:state, signal_name=:signal)
+    @test eltype(ke) == Rational{Int} && Experiment(ke) == ex
+    if isdefined(FiniteKernels, :invert_kernel)
+        fk_inv = FiniteKernels.invert_kernel(kb, ke)
+        cda_inv = bayesian_inverse(kb, ke)
+        @test vec(kernel_matrix(fk_inv.evidence)) == cda_inv.evidence
+        @test kernel_matrix(fk_inv.inverse) == cda_inv.inverse
+    end
+    # prune_generators dispatches cleanly on both DecisionAnalysis.CredalSet and CredalHull
+    cs = CredalSet([:s1, :s2], [[1 // 1, 0 // 1], [0 // 1, 1 // 1], [1 // 2, 1 // 2]])
+    @test length(extreme_points(prune_generators(cs))) == 2
+    ch = belief_value(cs, CredalMonad())
+    @test length(prune_generators(ch).generators) == 2
 end

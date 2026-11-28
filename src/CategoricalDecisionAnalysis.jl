@@ -70,7 +70,7 @@ const IDs = InfluenceDiagrams
 import Catlab.Theories: compose, otimes, dom, codom
 import MarkovCategories: evaluate
 import DecisionAnalysis: decide, regret_table, act_now_value, evpi, evsi,
-                         value_with_information
+                         value_with_information, prune_generators
 
 # Every exported name of DecisionAnalysis is re-exported (ADR 0009), so that
 # `using CategoricalDecisionAnalysis` is a superset of `using DecisionAnalysis`.
@@ -87,10 +87,11 @@ export CategoricalDecisionAnalysisError, MonadMismatchError, BackwardInductionEr
 export UncertaintyMonad, IdentityMonad, DistributionMonad, PowersetMonad, CredalMonad,
        RewardMonad, FiniteDistribution, FiniteSubset, CredalHull, probability_of,
        monad_unit, monad_bind, monad_map, monad_join, in_hull, same_hull,
-       prune_generators, StructureMap, IdentityAlgebra, ExpectationAlgebra,
+       StructureMap, IdentityAlgebra, ExpectationAlgebra,
        InfimumAlgebra, SupremumAlgebra, LowerExpectationAlgebra, UpperExpectationAlgebra,
        TotalRewardAlgebra, TransportedAlgebra, HurwiczMap, LaplaceMap, CVaRMap,
-       QuantileMap, AlphaMaxminMap, RestrictedMap, monad_of, is_algebra, is_monotone,
+       QuantileMap, AlphaMaxminMap, SmoothAmbiguityMap, RestrictedMap, monad_of, is_algebra,
+       is_monotone,
        is_translation_equivariant, admits_backward_induction, algebra_unit_defect,
        algebra_multiplication_defect, MonadMorphism, monad_morphism, has_monad_morphism,
        restrict_algebra, structure_map, belief_monad, belief_value, KleisliMap,

@@ -318,6 +318,10 @@ function rule_selection(::IntervalDominance)
     return RuleSelection(:IntervalDominance, :identity, nothing, :interval_dominance,
                          nothing)
 end
+function rule_selection(r::StochasticDominance)
+    return RuleSelection(:StochasticDominance, :identity, nothing,
+                         (:stochastic_dominance, r.order), nothing)
+end
 function rule_selection(; algebra, selector=:optimize, transform::Symbol=:identity,
                         name::Symbol=:custom, scenarios=nothing, uniform::Bool=false)
     transform in (:identity, :regret, :relative_regret) ||
@@ -335,7 +339,7 @@ end
 function _check_selector(s)
     s === :optimize && return nothing
     s isa Tuple{Symbol,Real} && s[1] === :threshold && return nothing
-    throw(ArgumentError("`selector` must be :optimize or (:threshold, level), got $s"))
+    return throw(ArgumentError("`selector` must be :optimize or (:threshold, level), got $s"))
 end
 
 function admits_backward_induction(r::RuleSelection)
@@ -420,8 +424,8 @@ function _eadmissible_slack(E::AbstractMatrix, a::Integer; optimizer=nothing)
     T = _exact(eltype(E)) ? Rational{BigInt} : Float64
     n, K = size(E)
     model = JuMP.GenericModel{T}()
-    λ = JuMP.@variable(model, [1:K], lower_bound = zero(T), base_name = "λ")
-    t = JuMP.@variable(model, base_name = "t")
+    λ = JuMP.@variable(model, [1:K], lower_bound=zero(T), base_name="λ")
+    t = JuMP.@variable(model, base_name="t")
     simplex = JuMP.@constraint(model, sum(λ) == one(T))
     optimal = JuMP.@constraint(model, [b = 1:n],
                                sum((T(E[a, k]) - T(E[b, k])) * λ[k] for k in 1:K) - t >=
@@ -438,6 +442,22 @@ function select(r::RuleSelection, problem::DecisionProblem; atol::Real=0,
                 rtol::Real=_tie_rtol(eltype(problem.payoff)), optimizer=nothing)
     actions = feasible_actions(problem)
     if r.algebra === nothing
+        if r.selector isa Tuple{Symbol,Int} && r.selector[1] === :stochastic_dominance
+            order = r.selector[2]
+            states = problem.payoff.states
+            # Validates that the belief is a single probability distribution (or point mass)
+            m = belief_value(problem.belief, DistributionMonad(); states)
+            p = [probability_of(m, s) for s in states]
+            Q = problem.payoff.Q[problem.feasible, :]
+            dom_fn = order == 1 ? fsd_dominates : ssd_dominates
+            n = size(Q, 1)
+            idx = findall(1:n) do a
+                qa = view(Q, a, :)
+                return !any(b -> b != a && dom_fn(view(Q, b, :), p, qa, p; strict=true,
+                                                  atol=atol), 1:n)
+            end
+            return actions[idx]
+        end
         E = _generator_expectations(problem)
         tol = _tie_tolerance(E, atol, rtol)
         n = size(E, 1)
@@ -742,8 +762,8 @@ function _criterion_map(r::RuleSelection)
     return nothing
 end
 function _criterion_map(x)
-    throw(ArgumentError("a criterion is a StructureMap, an aggregator or a scalar rule " *
-                        "of DecisionAnalysis; got $(typeof(x))"))
+    return throw(ArgumentError("a criterion is a StructureMap, an aggregator or a scalar rule " *
+                               "of DecisionAnalysis; got $(typeof(x))"))
 end
 _criterion_name(α::StructureMap) = nameof(typeof(α))
 _criterion_name(a::AbstractAggregator) = nameof(typeof(a))

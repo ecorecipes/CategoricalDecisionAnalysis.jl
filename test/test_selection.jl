@@ -15,8 +15,10 @@
                         DecisionRule(Laplace(); transform=RegretTransform()),
                         DecisionRule(WorstCase(); scenarios=[:s1, :s3])]
         credal_rules = [GammaMaximin(), DecisionRule(UpperExpectation()),
-                        DecisionRule(AlphaMaxmin(1 // 3)), EAdmissible(), Maximal(),
-                        IntervalDominance()]
+                        DecisionRule(AlphaMaxmin(1 // 3)),
+                        DecisionRule(SmoothAmbiguity(0.5)),
+                        EAdmissible(), Maximal(), IntervalDominance()]
+        sd_rules = [StochasticDominance(; order=1), StochasticDominance(; order=2)]
         compared = 0
         for _ in 1:40
             t = random_payoff_table(rng, 4, 4; T=Rational{Int})
@@ -26,7 +28,7 @@
                        ScenarioSet(t.states[[1, 3, 4]]), PointBelief(t.states[2]),
                        random_credal_set(rng, 4, 3; T=Rational{Int})]
             beliefs[4] = CredalSet(t.states, extreme_points(beliefs[4]))
-            for belief in beliefs, rule in vcat(scalar_rules, credal_rules)
+            for belief in beliefs, rule in vcat(scalar_rules, credal_rules, sd_rules)
                 p = DecisionProblem(t, belief; feasible=[true, true, false, true])
                 expected = try
                     decide(p, rule)
@@ -41,11 +43,20 @@
                     continue
                 end
                 @test select(r, p) == expected.chosen
-                expected.scores === nothing || @test rule_scores(r, p) == expected.scores
-                expected.scores === nothing ||
-                    @test quantifier(r, p) == (expected.sense === :max ?
-                                               maximum(expected.scores) :
-                                               minimum(expected.scores))
+                if expected.scores !== nothing
+                    if eltype(expected.scores) <: Rational
+                        @test rule_scores(r, p) == expected.scores
+                    else
+                        @test rule_scores(r, p) ≈ expected.scores
+                    end
+                    q_exp = expected.sense === :max ? maximum(expected.scores) :
+                            minimum(expected.scores)
+                    if q_exp isa Rational
+                        @test quantifier(r, p) == q_exp
+                    else
+                        @test quantifier(r, p) ≈ q_exp
+                    end
+                end
                 compared += 1
             end
         end

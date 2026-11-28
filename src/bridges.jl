@@ -38,3 +38,14 @@ end
 function finite_kernel(m::ResilienceCore.MarkovKernel, input, output; atol::Real=1e-8)
     return finite_kernel(m.P, input, output; orientation=:rows, atol)
 end
+
+function finite_kernel(b::FiniteBelief; name::Symbol=:state,
+                       atol::Real=_default_atol(eltype(b.probabilities)))
+    return FiniteKernel(b; name, atol)
+end
+
+function finite_kernel(e::Experiment; state_name::Symbol=:state,
+                       signal_name::Symbol=:signal,
+                       atol::Real=_default_atol(eltype(e.likelihood)))
+    return FiniteKernel(e; state_name, signal_name, atol)
+end
