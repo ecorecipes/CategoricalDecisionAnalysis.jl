@@ -424,8 +424,8 @@ function _hull_distance(q::FiniteDistribution, gens::AbstractVector; optimizer=n
     T = _exact(S) ? Rational{BigInt} : Float64
     model = JuMP.GenericModel{T}()
     K = length(gens)
-    λ = JuMP.@variable(model, [1:K], lower_bound=zero(T), base_name="λ")
-    t = JuMP.@variable(model, lower_bound=zero(T), base_name="t")
+    λ = JuMP.@variable(model, [1:K], lower_bound = zero(T), base_name = "λ")
+    t = JuMP.@variable(model, lower_bound = zero(T), base_name = "t")
     simplex = JuMP.@constraint(model, sum(λ) == one(T))
     P = T[T(probability_of(g, x)) for x in support, g in gens]
     b = T[T(probability_of(q, x)) for x in support]

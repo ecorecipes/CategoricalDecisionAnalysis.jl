@@ -424,8 +424,8 @@ function _eadmissible_slack(E::AbstractMatrix, a::Integer; optimizer=nothing)
     T = _exact(eltype(E)) ? Rational{BigInt} : Float64
     n, K = size(E)
     model = JuMP.GenericModel{T}()
-    λ = JuMP.@variable(model, [1:K], lower_bound=zero(T), base_name="λ")
-    t = JuMP.@variable(model, base_name="t")
+    λ = JuMP.@variable(model, [1:K], lower_bound = zero(T), base_name = "λ")
+    t = JuMP.@variable(model, base_name = "t")
     simplex = JuMP.@constraint(model, sum(λ) == one(T))
     optimal = JuMP.@constraint(model, [b = 1:n],
                                sum((T(E[a, k]) - T(E[b, k])) * λ[k] for k in 1:K) - t >=

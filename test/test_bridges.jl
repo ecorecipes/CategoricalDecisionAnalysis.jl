@@ -34,7 +34,7 @@ using ResilienceCore: ResilienceCore
     b = FiniteBelief([:low, :high], [3 // 5, 2 // 5])
     kb = finite_kernel(b; name=:state)
     @test eltype(kb) == Rational{Int} && FiniteBelief(kb) == b
-    ex = Experiment([4 // 5 1 // 5; 1 // 5 4 // 5]; signals=[:neg, :pos],
+    ex = Experiment([4//5 1//5; 1//5 4//5]; signals=[:neg, :pos],
                     states=[:low, :high])
     ke = finite_kernel(ex; state_name=:state, signal_name=:signal)
     @test eltype(ke) == Rational{Int} && Experiment(ke) == ex
