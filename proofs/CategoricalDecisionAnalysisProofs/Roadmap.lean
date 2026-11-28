@@ -147,4 +147,11 @@ Each line names a proved result and what it asks of `CategoricalDecisionAnalysis
   solver for duals.
 * `credal_tensor_not_commutative`: offering no tensor for credal kernels is forced, not a
   limitation of the implementation; the error message can cite the instance.
+* `smoothAmbiguityMap_mono`, `smoothAmbiguityMap_depends_on_generators`,
+  `smoothAmbiguityMap_credalComp_ne_nested`: `SmoothAmbiguityMap(η)` is monotone and concave
+  but fails both hull invariance and the credal-monad multiplication law, so
+  `is_algebra(::SmoothAmbiguityMap)` is `false` and `backward_induction_class` is `:nested`.
+* `prune_redundant_lowerExpectation`, `stochasticDominance_order2_subset_order1`,
+  `stochasticDominance_order1_nonempty`, `stochasticDominance_order2_nonempty`: backs
+  `prune_generators(::CredalHull)` and `rule_selection(::StochasticDominance)`.
 -/
